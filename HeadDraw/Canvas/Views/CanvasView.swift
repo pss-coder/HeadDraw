@@ -35,6 +35,14 @@ struct CanvasView: UIViewRepresentable {
         }
     }
     
+    static func dismantleUIView(
+        _ uiView: PKCanvasView,
+        coordinator: Coordinator
+    ) {
+        // clear the drawing
+        uiView.drawing = PKDrawing()
+    }
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(drawing: $drawing)
     }

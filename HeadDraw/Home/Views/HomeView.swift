@@ -6,17 +6,19 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct HomeView: View {
+    @State private var newDrawing: PKDrawing = PKDrawing()
+    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
                 Text("Gallery")
                     .font(.title)
                     .fontWeight(.bold)
-                
-                Button {
-                        //on tapped
+                NavigationLink {
+                    CanvasView(drawing: $newDrawing)
                 } label: {
                     HStack {
                         Image(systemName: "pencil.line")
@@ -29,6 +31,7 @@ struct HomeView: View {
                 .buttonStyle(.borderedProminent)
                 .buttonSizing(.flexible)
                 .buttonBorderShape(.roundedRectangle(radius: 8))
+
                 
                 // Have a list here
                 List {
