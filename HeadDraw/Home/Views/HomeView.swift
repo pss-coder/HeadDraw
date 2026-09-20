@@ -7,9 +7,19 @@
 
 import SwiftUI
 import PencilKit
+import SwiftData
 
 struct HomeView: View {
     @State private var newDrawing: PKDrawing = PKDrawing()
+    
+    @Environment(\.modelContext) private var modelContext
+    
+    @Query(
+        sort: \DrawingModel.createdAt,
+        order: .reverse
+    )
+    
+    private var drawings: [DrawingModel]
     
     var body: some View {
         NavigationStack {
@@ -18,7 +28,9 @@ struct HomeView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 NavigationLink {
-                    CanvasView(drawing: $newDrawing)
+                    CanvasView(drawing: $newDrawing) { drawing in
+                        saveDrawing(drawing)
+                    }
                 } label: {
                     HStack {
                         Image(systemName: "pencil.line")
@@ -34,33 +46,80 @@ struct HomeView: View {
 
                 
                 // Have a list here
-                List {
-                    
-                    NavigationLink("Drawing 1") {
+//                List {
+//                    
+//                    NavigationLink("Drawing 1") {
+//                        
+//                        Text("Drawing 1 Detail")
+//                        
+//                    }
+//                    
+//                    NavigationLink("Drawing 2") {
+//                        
+//                        Text("Drawing 2 Detail")
+//                        
+//                    }
+//                    
+//                    NavigationLink("Drawing 3") {
+//                        
+//                        Text("Drawing 3 Detail")
+//                        
+//                    }
+//                    
+//                }
+                List(drawings) { drawing in
+                    HStack {
+                        if let image = UIImage(data: drawing.thumbnailData) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 30, height: 30)
+                        }
                         
-                        Text("Drawing 1 Detail")
+                        VStack(alignment: .leading) {
+                            Text(
+                                drawing.createdAt,
+                                style: .date
+                            )
+                            Text(
+                                drawing.createdAt,
+                                style: .time
+                            )
+                        }
                         
                     }
-                    
-                    NavigationLink("Drawing 2") {
-                        
-                        Text("Drawing 2 Detail")
-                        
-                    }
-                    
-                    NavigationLink("Drawing 3") {
-                        
-                        Text("Drawing 3 Detail")
-                        
-                    }
-                    
                 }
-                
                 .listStyle(.plain)
-                
                 .frame(maxHeight: .infinity)
             }
             .padding()
+        }
+    }
+    
+    private func saveDrawing(_ drawing: PKDrawing) {
+        let data = drawing.dataRepresentation()
+        
+        let thumbnail = drawing.image(
+            from: drawing.bounds,
+            scale: 1
+        )
+        
+        guard let thumbnailData = thumbnail.pngData() else {
+            return
+        }
+        
+        let drawingModel = DrawingModel(
+            drawingData: data,
+            thumbnailData: thumbnailData
+        )
+        
+        modelContext.insert(drawingModel)
+        
+        do {
+            try modelContext.save()
+            debugPrint("drawing saved")
+        } catch {
+            print("Failed to save drawing:", error)
         }
     }
 }

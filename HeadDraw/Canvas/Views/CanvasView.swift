@@ -12,6 +12,8 @@ struct CanvasView: UIViewRepresentable {
     let toolPicker = PKToolPicker()
     @Binding var drawing: PKDrawing
     
+    let onDrawingFinished: (PKDrawing) -> Void
+    
     func makeUIView(context: Context) -> PKCanvasView {
         let canvasView = PKCanvasView()
         
@@ -39,21 +41,27 @@ struct CanvasView: UIViewRepresentable {
         _ uiView: PKCanvasView,
         coordinator: Coordinator
     ) {
+        debugPrint("cleanig up")
+        // send over
+        coordinator.onDrawingFinished(uiView.drawing)
+        
         // clear the drawing
         uiView.drawing = PKDrawing()
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(drawing: $drawing)
+        Coordinator(drawing: $drawing, onDrawingFinished: onDrawingFinished)
     }
 }
 
 extension CanvasView {
     class Coordinator: NSObject, PKCanvasViewDelegate {
         var drawing: Binding<PKDrawing>
+        let onDrawingFinished: (PKDrawing) -> Void
         
-        init(drawing: Binding<PKDrawing>) {
+        init(drawing: Binding<PKDrawing>, onDrawingFinished: @escaping (PKDrawing) -> Void) {
             self.drawing = drawing
+            self.onDrawingFinished = onDrawingFinished
         }
         
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
@@ -88,7 +96,9 @@ extension CanvasView {
         
         Divider()
         
-        CanvasView(drawing: $drawing)
+        CanvasView(drawing: $drawing) { drawing in
+            debugPrint(drawing.strokes.count)
+        }
         
     }
 }
