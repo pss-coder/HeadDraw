@@ -42,9 +42,10 @@ struct CanvasView: UIViewRepresentable {
         coordinator: Coordinator
     ) {
         debugPrint("cleanig up")
-        // send over
-        coordinator.onDrawingFinished(uiView.drawing)
-        
+        if (!uiView.drawing.isEmpty) {
+                // send over
+            coordinator.onDrawingFinished(uiView.drawing)
+        }
         // clear the drawing
         uiView.drawing = PKDrawing()
     }
@@ -52,6 +53,63 @@ struct CanvasView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(drawing: $drawing, onDrawingFinished: onDrawingFinished)
     }
+}
+
+extension CanvasView {
+    
+    
+    static func generateDottedCircleDrawing(center: CGPoint, radius: CGFloat, dotCount: Int = 40, dotSize: CGFloat = 8.0) -> PKDrawing {
+        var strokes: [PKStroke] = []
+        
+            // Explicitly define ink properties (.pen or .marker work best)
+        let ink = PKInk(.pen, color: .systemBlue)
+        
+        for i in 0..<dotCount {
+            let angle = (CGFloat(i) / CGFloat(dotCount)) * 2.0 * .pi
+            let x = center.x + radius * cos(angle)
+            let y = center.y + radius * sin(angle)
+            
+            let startPointLocation = CGPoint(x: x, y: y)
+                // FIX 1: Shift the endpoint by 0.1 points so PencilKit detects a valid vector path length
+            let endPointLocation = CGPoint(x: x + 0.1, y: y + 0.1)
+            
+            let firstPoint = PKStrokePoint(
+                location: startPointLocation,
+                timeOffset: 0,
+                size: CGSize(width: dotSize, height: dotSize),
+                opacity: 1.0,
+                force: 1.0,
+                azimuth: 0.0,
+                altitude: .pi / 2
+            )
+            
+            let secondPoint = PKStrokePoint(
+                location: endPointLocation,
+                timeOffset: 0.01,
+                size: CGSize(width: dotSize, height: dotSize),
+                opacity: 1.0,
+                force: 1.0,
+                azimuth: 0.0,
+                altitude: .pi / 2
+            )
+            
+                // Bundle the micro-segment together
+            let path = PKStrokePath(controlPoints: [firstPoint, secondPoint], creationDate: Date())
+            
+                // FIX 2: Explicitly pass an identity matrix transformation and an empty mask structure
+            let stroke = PKStroke(
+                ink: ink,
+                path: path,
+                transform: .identity,
+                mask: nil
+            )
+            strokes.append(stroke)
+        }
+        
+        return PKDrawing(strokes: strokes)
+    }
+
+
 }
 
 extension CanvasView {
@@ -71,7 +129,13 @@ extension CanvasView {
 }
 
 #Preview {
-    @Previewable @State var drawing: PKDrawing = PKDrawing()
+    @Previewable @State var drawing: PKDrawing = CanvasView.generateDottedCircleDrawing(
+        center: CGPoint(x: 200, y: 300),
+        radius: 100,
+        dotCount: 30,
+        dotSize: 6.0
+    )
+    
     VStack {
         HStack {
             Button {
@@ -100,5 +164,15 @@ extension CanvasView {
             debugPrint(drawing.strokes.count)
         }
         
+    }
+}
+
+
+//import PencilKit
+//import UIKit
+
+extension PKDrawing {
+    var isEmpty: Bool {
+        return self.strokes.isEmpty
     }
 }

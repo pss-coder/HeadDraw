@@ -11,6 +11,12 @@ import SwiftData
 
 struct HomeView: View {
     @State private var newDrawing: PKDrawing = PKDrawing()
+//    CanvasView.generateDottedCircleDrawing(
+//        center: CGPoint(x: 200, y: 300),
+//        radius: 100,
+//        dotCount: 30,
+//        dotSize: 6.0
+//    )
     
     @Environment(\.modelContext) private var modelContext
     
