@@ -10,12 +10,15 @@ import SwiftUI
 struct CanvasView: UIViewRepresentable {
     
     let toolPicker = PKToolPicker()
+    
     @Binding var drawing: PKDrawing
+    @Binding var airpodsDrawingPoints: [CGPoint]
+    @Binding var cursorPosition: CGPoint
     
     let onDrawingFinished: (PKDrawing) -> Void
     
-    func makeUIView(context: Context) -> PKCanvasView {
-        let canvasView = PKCanvasView()
+    func makeUIView(context: Context) -> PKTrackingCanvasView {
+        let canvasView = PKTrackingCanvasView()
         
         // can draw using hand/apple pencil
         canvasView.drawingPolicy = .anyInput
@@ -27,18 +30,57 @@ struct CanvasView: UIViewRepresentable {
         //canvasView.drawing = drawing
         canvasView.delegate = context.coordinator
         
+        // drawing callbacks on touches
+        canvasView.onTouchBegan = { position in
+            cursorPosition = position
+            //isTouching = true
+        }
+        
+        canvasView.onTouchMoved = { position in
+            cursorPosition = position
+        }
+        
+        canvasView.onTouchEnded = {
+            //isTouching = false
+        }
+        
         return canvasView
     }
     
-    func updateUIView(_ uiView: PKCanvasView, context: Context) {
+    func updateUIView(_ uiView: PKTrackingCanvasView, context: Context) {
         // update UI
-        if uiView.drawing != drawing {
-            uiView.drawing = drawing
+        // we handle the drawing here
+//        if uiView.drawing != drawing {
+//            // uiView.drawing = drawing
+//        }
+        let points = airpodsDrawingPoints.map {
+            PKStrokePoint(
+                location: $0,
+                timeOffset: 0,
+                size: CGSize(width: 5, height: 5),
+                opacity: 1,
+                force: 1,
+                azimuth: 0,
+                altitude: .pi / 2
+            )
         }
+        
+        let path = PKStrokePath(
+            controlPoints: points,
+            creationDate: Date()
+        )
+        
+        let stroke = PKStroke(
+            ink: PKInk(.pen, color: .black),
+            path: path
+        )
+        
+        uiView.drawing = PKDrawing(strokes: [stroke])
+        print("strokes count: \(uiView.drawing.strokes.count)")
     }
     
     static func dismantleUIView(
-        _ uiView: PKCanvasView,
+        _ uiView: PKTrackingCanvasView,
         coordinator: Coordinator
     ) {
         debugPrint("cleanig up")
@@ -128,44 +170,44 @@ extension CanvasView {
     }
 }
 
-#Preview {
-    @Previewable @State var drawing: PKDrawing = CanvasView.generateDottedCircleDrawing(
-        center: CGPoint(x: 200, y: 300),
-        radius: 100,
-        dotCount: 30,
-        dotSize: 6.0
-    )
-    
-    VStack {
-        HStack {
-            Button {
-                    // Clears the canvas
-                drawing = PKDrawing()
-            } label: {
-                Text("Clear all")
-            }
-            
-            Spacer()
-            
-            Button {
-                    // get drawing data representation
-                    //drawing.dataRepresentation()
-                    // image
-                    //drawing.image(from: .drawing(drawing), scale: 1.0)
-            } label: {
-                Text("Save")
-            }
-        }
-        .padding()
-        
-        Divider()
-        
-        CanvasView(drawing: $drawing) { drawing in
-            debugPrint(drawing.strokes.count)
-        }
-        
-    }
-}
+//#Preview {
+//    @Previewable @State var drawing: PKDrawing = CanvasView.generateDottedCircleDrawing(
+//        center: CGPoint(x: 200, y: 300),
+//        radius: 100,
+//        dotCount: 30,
+//        dotSize: 6.0
+//    )
+//    
+//    VStack {
+//        HStack {
+//            Button {
+//                    // Clears the canvas
+//                drawing = PKDrawing()
+//            } label: {
+//                Text("Clear all")
+//            }
+//            
+//            Spacer()
+//            
+//            Button {
+//                    // get drawing data representation
+//                    //drawing.dataRepresentation()
+//                    // image
+//                    //drawing.image(from: .drawing(drawing), scale: 1.0)
+//            } label: {
+//                Text("Save")
+//            }
+//        }
+//        .padding()
+//        
+//        Divider()
+//        
+//        CanvasView(drawing: $drawing) { drawing in
+//            debugPrint(drawing.strokes.count)
+//        }
+//        
+//    }
+//}
 
 
 //import PencilKit
