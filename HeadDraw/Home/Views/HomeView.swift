@@ -11,15 +11,10 @@ import SwiftData
 
 struct HomeView: View {
     @State private var newDrawing: PKDrawing = PKDrawing()
-//    CanvasView.generateDottedCircleDrawing(
-//        center: CGPoint(x: 200, y: 300),
-//        radius: 100,
-//        dotCount: 30,
-//        dotSize: 6.0
-//    )
     
     @Environment(\.modelContext) private var modelContext
     
+    // Show drawings starting with most recent on top
     @Query(
         sort: \DrawingModel.createdAt,
         order: .reverse
@@ -50,29 +45,6 @@ struct HomeView: View {
                 .buttonSizing(.flexible)
                 .buttonBorderShape(.roundedRectangle(radius: 8))
 
-                
-                // Have a list here
-//                List {
-//                    
-//                    NavigationLink("Drawing 1") {
-//                        
-//                        Text("Drawing 1 Detail")
-//                        
-//                    }
-//                    
-//                    NavigationLink("Drawing 2") {
-//                        
-//                        Text("Drawing 2 Detail")
-//                        
-//                    }
-//                    
-//                    NavigationLink("Drawing 3") {
-//                        
-//                        Text("Drawing 3 Detail")
-//                        
-//                    }
-//                    
-//                }
                 List(drawings) { drawing in
                     HStack {
                         if let image = UIImage(data: drawing.thumbnailData) {

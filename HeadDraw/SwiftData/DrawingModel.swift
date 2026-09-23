@@ -14,27 +14,17 @@ final class DrawingModel{
     var createdAt: Date
     var drawingData : Data
     var thumbnailData: Data
-    
-    
+
     init(
-        
         id: UUID = UUID(),
-        
         createdAt: Date = .now,
-        
         drawingData: Data,
-        
         thumbnailData: Data
         
     ) {
-        
         self.id = id
-        
         self.createdAt = createdAt
-        
         self.drawingData = drawingData
-        
         self.thumbnailData = thumbnailData
-        
     }
 }
