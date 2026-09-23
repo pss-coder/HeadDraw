@@ -6,15 +6,41 @@
 //
 import CoreMotion
 import SwiftUI
+import AVFoundation
 
 @Observable
 class AirpodsMotionService: NSObject {
     var airpodsMotionManager: CMHeadphoneMotionManager
     = CMHeadphoneMotionManager()
     
+    var isHeadphoneConnected: Bool = false
+    
     override init() {
         super.init()
         airpodsMotionManager.delegate = self
+        
+        updateHeadphoneConnectionStatus()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleRouteChange(_:)),
+            name: AVAudioSession.routeChangeNotification,
+            object: nil
+        )
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc private func handleRouteChange(_ notification: Notification) {
+        updateHeadphoneConnectionStatus()
+    }
+    
+    private func updateHeadphoneConnectionStatus() {
+        let session = AVAudioSession.sharedInstance()
+        let headphonesTypes: [AVAudioSession.Port] = [.headphones, .bluetoothA2DP, .bluetoothLE, .bluetoothHFP]
+        isHeadphoneConnected = session.currentRoute.outputs.contains { headphonesTypes.contains($0.portType) }
     }
     
     var isMotionAvailable: Bool {
@@ -114,6 +140,8 @@ class AirpodsMotionService: NSObject {
             x: x,
             y: y
         )
+        
+        debugPrint(cursorPosition)
     }
     
     private func applyDeadZone(_ value: Double) -> Double {
@@ -127,6 +155,8 @@ class AirpodsMotionService: NSObject {
     func stopListeningToAirPodsMotionChanges() {
         guard isDeviceMotionActive else { return }
         airpodsMotionManager.stopDeviceMotionUpdates()
+        //reset 
+        cursorPosition = CGPoint(x: 0.5, y: 0.5)
     }
     
     
@@ -136,12 +166,14 @@ extension AirpodsMotionService: CMHeadphoneMotionManagerDelegate {
    
     func headphoneMotionManagerDidConnect(_ manager: CMHeadphoneMotionManager) {
         debugPrint("airpods CONNECTED")
+        updateHeadphoneConnectionStatus()
     }
     
     func headphoneMotionManagerDidDisconnect(
         _ manager: CMHeadphoneMotionManager
     ) {
         debugPrint("airpods DISCONNECTED")
+        updateHeadphoneConnectionStatus()
     }
     
 }
@@ -155,6 +187,7 @@ struct AirpodsMotionView: View {
         VStack {
             Text("isAvailable: \(service.isMotionAvailable)")
             Text("isActive: \(service.isDeviceMotionActive)")
+            Text("isHeadphoneConnected: \(service.isHeadphoneConnected)")
             
             GeometryReader { geometry in
                 
@@ -169,6 +202,7 @@ struct AirpodsMotionView: View {
                             y: service.cursorPosition.y * geometry.size.height
                         )
                 }
+                .ignoresSafeArea()
             }
             .onAppear {
                 service.startDeviceMotionUpdates()
@@ -183,3 +217,4 @@ struct AirpodsMotionView: View {
 #Preview {
     AirpodsMotionView()
 }
+

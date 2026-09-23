@@ -5,6 +5,8 @@
 //  Created by Pawandeep Sekhon on 19/9/26.
 //
 
+import AVFoundation
+import CoreMotion
 import SwiftUI
 import PencilKit
 import SwiftData
@@ -13,6 +15,10 @@ struct HomeView: View {
     @State private var newDrawing: PKDrawing = PKDrawing()
     
     @Environment(\.modelContext) private var modelContext
+    
+    @State private var airpodsService = AirpodsMotionService()
+    
+    @State var airpodsDrawingPoints: [CGPoint] = []
     
     // Show drawings starting with most recent on top
     @Query(
@@ -28,10 +34,46 @@ struct HomeView: View {
                 Text("Gallery")
                     .font(.title)
                     .fontWeight(.bold)
+                
+                headphonesCardView(isConnected: airpodsService.isHeadphoneConnected, isMotionAvailable: airpodsService.isMotionAvailable)
+                
                 NavigationLink {
-                    CanvasView(drawing: $newDrawing) { drawing in
-                        saveDrawing(drawing)
+                            
+                        GeometryReader { proxy in
+                            ZStack {
+                                CanvasView(
+                                    drawing: $newDrawing,
+                                    airpodsDrawingPoints: $airpodsDrawingPoints,
+                                    cursorPosition: $airpodsService
+                                        .cursorPosition) { drawing in
+                                            saveDrawing(drawing)
+                                        }
+                                
+                                Circle()
+                                    .fill(.blue)
+                                    .frame(width: 12, height: 12)
+                                    .position(
+                                        x: airpodsService.cursorPosition.x * proxy.size.width,
+                                        y: airpodsService.cursorPosition.y * proxy.size.height
+                                    )
+                        }
+                            .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
+                                    // we draw points on to the canvas
+                                    // guard oldValue != newValue else { return }
+                                let position = CGPoint(x: airpodsService.cursorPosition.x * proxy.size.width,
+                                                       y: airpodsService.cursorPosition.y * proxy.size.height)
+                                
+                                airpodsDrawingPoints
+                                    .append(position)
+                            }
                     }
+                        .onAppear {
+                            airpodsService.startDeviceMotionUpdates()
+                        }
+                        .onDisappear {
+                            airpodsService.stopListeningToAirPodsMotionChanges()
+                        }
+                        
                 } label: {
                     HStack {
                         Image(systemName: "pencil.line")
@@ -71,6 +113,7 @@ struct HomeView: View {
                 .frame(maxHeight: .infinity)
             }
             .padding()
+            
         }
     }
     
@@ -99,6 +142,32 @@ struct HomeView: View {
         } catch {
             print("Failed to save drawing:", error)
         }
+        
+        airpodsDrawingPoints.removeAll() // clean up
+    }
+    
+}
+
+// Components
+extension HomeView {
+    private func headphonesCardView(isConnected: Bool, isMotionAvailable: Bool) -> some View {
+        let allGood = isConnected && isMotionAvailable
+        let headphoneStatus = isConnected ? "Connected" : "Not Connected"
+        let motionStatus = isMotionAvailable ? "Available" : "Unavailable"
+        let bgColor: Color = allGood ? .green : (isConnected ? .yellow : .gray)
+        return HStack(spacing: 16) {
+            Image(systemName: "headphones.sensor.tag.radiowaves.left.and.right.fill")
+                .foregroundColor(isConnected ? .green : .red)
+            VStack(alignment: .leading, spacing: 4) {
+                Label("Headphones: " + headphoneStatus, systemImage: isConnected ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .foregroundColor(isConnected ? .green : .red)
+                Label("Motion Sensor: " + motionStatus, systemImage: isMotionAvailable ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .foregroundColor(isMotionAvailable ? .green : .red)
+            }
+        }
+        .padding()
+        .background(bgColor.opacity(0.15))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
