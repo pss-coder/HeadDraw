@@ -10,14 +10,16 @@ import AVFoundation
 import Vision
 import Observation
 
-@Observable
 @MainActor
+@Observable
 class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         // UI-Observable states
     var isLeftEyeClosed = false
     var isRightEyeClosed = false
     var blinkCount = 0
     var errorMessage: String? = nil
+    
+    var isEyesOpen: Bool = true // default eye is open
     
         // Camera session properties
     let session = AVCaptureSession()
@@ -27,7 +29,7 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     // EAR Threshold parameters (tweak based on testing)
     private let blinkThreshold: CGFloat = 0.18
-    private var wasBothEyesClosed = false
+    var wasBothEyesClosed = false
     
     override init() {
         super.init()
@@ -118,7 +120,7 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
             self.isLeftEyeClosed = leftClosed
             self.isRightEyeClosed = rightClosed
             
-                // Simple edge-triggered counter logic for an explicit dual-blink
+            // Simple edge-triggered counter logic for an explicit dual-blink
             let bothClosed = leftClosed && rightClosed
             if bothClosed && !wasBothEyesClosed {
                 self.blinkCount += 1

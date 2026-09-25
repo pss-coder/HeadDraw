@@ -18,7 +18,17 @@ struct HomeView: View {
     
     @State private var airpodsService = AirpodsMotionService()
     
+    @State private var detector = BlinkDetector()
+    
     @State var airpodsDrawingPoints: [CGPoint] = []
+    
+    @State private var cameraPosition = CGPoint.zero
+    @State private var cameraDragStartPosition: CGPoint?
+    let cameraWidth: CGFloat = 240
+    
+    let cameraHeight: CGFloat = 160
+    
+    let cameraPadding: CGFloat = 16
     
     // Show drawings starting with most recent on top
     @Query(
@@ -38,14 +48,13 @@ struct HomeView: View {
                 headphonesCardView(isConnected: airpodsService.isHeadphoneConnected, isMotionAvailable: airpodsService.isMotionAvailable)
                 
                 NavigationLink {
-                            
                         GeometryReader { proxy in
                             ZStack {
                                 CanvasView(
                                     drawing: $newDrawing,
                                     airpodsDrawingPoints: $airpodsDrawingPoints,
                                     cursorPosition: $airpodsService
-                                        .cursorPosition) { drawing in
+                                        .cursorPosition, isTouching: $detector.wasBothEyesClosed) { drawing in
                                             saveDrawing(drawing)
                                         }
                                 
@@ -56,15 +65,65 @@ struct HomeView: View {
                                         x: airpodsService.cursorPosition.x * proxy.size.width,
                                         y: airpodsService.cursorPosition.y * proxy.size.height
                                     )
+                                
+                                CameraPreviewView(session: detector.session)
+//                                Rectangle()
+                                    .frame(
+                                        width: 240,
+                                        height: 160,
+                                        alignment: .bottomLeading
+                                    )
+                                    .clipShape(
+                                        RoundedRectangle(cornerRadius: 16)
+                                    )
+                                    .position(cameraPosition)
+                                    .gesture(
+                                        DragGesture()
+                                            .onChanged { value in
+                                                if cameraDragStartPosition == nil {
+                                                    cameraDragStartPosition = cameraPosition
+                                                }
+                                                
+                                                guard let startPosition = cameraDragStartPosition else {
+                                                    return
+                                                }
+                                                
+                                                cameraPosition = CGPoint(
+                                                    x: startPosition.x + value.translation.width,
+                                                    y: startPosition.y + value.translation.height
+                                                )
+                                            }
+                                            .onEnded { _ in
+                                                cameraDragStartPosition = nil
+                                            }
+                                    )
+                                    .onAppear {
+                                        detector.start()
+                                    }
+                                    .onDisappear {
+                                        detector.stop()
+                                    }
                         }
                             .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
                                     // we draw points on to the canvas
-                                    // guard oldValue != newValue else { return }
+                                    // we append only if eyes was closed
+                                guard detector.wasBothEyesClosed else { return }
                                 let position = CGPoint(x: airpodsService.cursorPosition.x * proxy.size.width,
                                                        y: airpodsService.cursorPosition.y * proxy.size.height)
                                 
                                 airpodsDrawingPoints
                                     .append(position)
+                            }
+                            .onAppear {
+                                    // Bottom-left initial position
+                                
+                                cameraPosition = CGPoint(
+                                    
+                                    x: cameraWidth / 2 + cameraPadding,
+                                    
+                                    y: proxy.size.height - cameraHeight - (cameraHeight/2)
+                                    
+                                )
                             }
                     }
                         .onAppear {
@@ -73,6 +132,9 @@ struct HomeView: View {
                         .onDisappear {
                             airpodsService.stopListeningToAirPodsMotionChanges()
                         }
+                        .navigationTitle(
+                            "Blink Count: \(detector.blinkCount)"
+                        )
                         
                 } label: {
                     HStack {

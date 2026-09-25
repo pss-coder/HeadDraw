@@ -14,6 +14,7 @@ struct CanvasView: UIViewRepresentable {
     @Binding var drawing: PKDrawing
     @Binding var airpodsDrawingPoints: [CGPoint]
     @Binding var cursorPosition: CGPoint
+    @Binding var isTouching: Bool // to denote if pencil can be drawn
     
     let onDrawingFinished: (PKDrawing) -> Void
     
@@ -23,9 +24,9 @@ struct CanvasView: UIViewRepresentable {
         // can draw using hand/apple pencil
         canvasView.drawingPolicy = .anyInput
         // Show pencil tools
-        toolPicker.setVisible(true, forFirstResponder: canvasView)
-        toolPicker.addObserver(canvasView)
-        canvasView.becomeFirstResponder()
+//        toolPicker.setVisible(true, forFirstResponder: canvasView)
+//        toolPicker.addObserver(canvasView)
+//        canvasView.becomeFirstResponder()
         
         //canvasView.drawing = drawing
         canvasView.delegate = context.coordinator
