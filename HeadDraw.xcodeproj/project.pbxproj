@@ -59,11 +59,21 @@
 			);
 			target = 478462373066C61C00C1C784 /* HeadDraw-Mac */;
 		};
+		47E1839A30682A8D008EAC7A /* Exceptions for "HeadDraw-iOS" folder in "HeadDraw-Mac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppIcon.icon,
+			);
+			target = 478462373066C61C00C1C784 /* HeadDraw-Mac */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		478460B3305E5F7A00C1C784 /* HeadDraw-iOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				47E1839A30682A8D008EAC7A /* Exceptions for "HeadDraw-iOS" folder in "HeadDraw-Mac" target */,
+			);
 			path = "HeadDraw-iOS";
 			sourceTree = "<group>";
 		};
