@@ -6,8 +6,11 @@
 //
 import SwiftUI
 import PencilKit
+import SwiftData
 
 struct HomeView: View {
+    @Environment(\.modelContext) private var modelContext
+
     @State private var path: [AppRoute] = []
     
     //TODO: Pass as a View Model
@@ -67,6 +70,7 @@ struct HomeView: View {
                     isCalibrationViewPresented = true
                 } onDoodleSave: { drawing in
                     finishedDrawing = nil
+                    saveDrawing(drawing)
                 }
         }
         .fullScreenCover(isPresented: $isCalibrationViewPresented) {
@@ -115,6 +119,17 @@ struct HomeView: View {
             GalleryView(limit: 6)
         }
         .padding()
+    }
+    
+    private func saveDrawing(_ drawing: DrawingModel) {
+        modelContext.insert(drawing)
+        
+        do {
+            try modelContext.save()
+            debugPrint("drawing saved")
+        } catch {
+            print("Failed to save drawing:", error)
+        }
     }
 }
 
