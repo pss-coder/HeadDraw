@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct GalleryListView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         ScrollView {
             GalleryView()
-                .padding()
+                .padding(SketchyTheme.Spacing.medium)
         }
-
-        .navigationTitle("Doodles")
+        .sketchyPaper()
+        .navigationTitle("Doodle gallery")
         .navigationBarTitleDisplayMode(.large)
+        .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
     }
 }
 

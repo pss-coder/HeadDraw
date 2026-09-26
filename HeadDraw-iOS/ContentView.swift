@@ -9,7 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello World")
+        Text("HeadDraw")
+            .font(SketchyTheme.Font.heading(38))
+            .sketchyUnderline(color: SketchyTheme.Color.coral, lineWidth: 2)
+            .padding()
+            .sketchyPaper()
     }
 }
 #Preview {

@@ -8,6 +8,8 @@ import SwiftUI
 import SwiftData
 
 struct GalleryView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     // Show drawings starting with most recent on top
     @Query(
         sort: \DrawingModel.createdAt,
@@ -51,7 +53,10 @@ struct GalleryView: View {
                                 .frame(width: geometry.size.width, height: geometry.size.width)
                         }
                     }
-                    .border(.primary.opacity(0.5))
+                    .sketchyBorder(
+                        color: SketchyTheme.Color.ink(for: colorScheme).opacity(0.8),
+                        fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                    )
                     .aspectRatio(1, contentMode: .fit)
                 }
                 .buttonStyle(.plain)

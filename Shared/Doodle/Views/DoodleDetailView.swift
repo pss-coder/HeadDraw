@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct DoodleDetailView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let drawing: DrawingModel
     @State private var shareURL: URL?
 
@@ -15,8 +17,7 @@ struct DoodleDetailView: View {
         ScrollView {
             VStack(spacing: 20) {
                 Text("Your doodle")
-                    .font(.title)
-                    .fontWeight(.bold)
+                    .font(SketchyTheme.Font.heading(28))
 
                 if let image = drawing.thumbnailImage {
                     Image(uiImage: image)
@@ -24,7 +25,11 @@ struct DoodleDetailView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .frame(height: 350)
-                        .border(.primary)
+                        .padding(8)
+                        .sketchyBorder(
+                            color: SketchyTheme.Color.ink(for: colorScheme),
+                            fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                        )
                 }
 
                 Text(drawing.createdAt, format: .dateTime.month(.wide).day().year())
@@ -33,23 +38,19 @@ struct DoodleDetailView: View {
                 if let shareURL {
                     ShareLink(
                         item: shareURL,
-                        preview: SharePreview("My Doodle")
+                        preview: SharePreview("My HeadDraw doodle")
                     ) {
-                        Label("Share Image", systemImage: "square.and.arrow.up")
+                        Label("Share doodle", systemImage: "square.and.arrow.up")
                     }
-                    .buttonStyle(
-                        MinimalButtonStyle(
-                            backgroundColor: .clear,
-                            foregroundColor: .primary,
-                            borderColor: Color.primary.opacity(0.2)
-                        )
-                    )
+                    .buttonStyle(SketchyButtonStyle(tone: .paper))
                 }
             }
             .padding()
         }
+        .sketchyPaper()
         .navigationTitle("Doodle")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
         .onAppear {
             shareURL = makeShareURL()
         }

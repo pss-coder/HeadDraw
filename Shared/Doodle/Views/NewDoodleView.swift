@@ -11,6 +11,7 @@ import PencilKit
 
 struct NewDoodleView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var timeRemaining: TimeInterval = 15
     @State private var hasFinished = false
     
@@ -40,6 +41,9 @@ struct NewDoodleView: View {
                     CanvasView(
                         drawing: newDrawing,
                     )
+                    .colorInvert()
+                    .colorMultiply(SketchyTheme.Color.teal)
+                    .shadow(color: SketchyTheme.Color.teal.opacity(0.42), radius: 5)
                     .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
                         guard blinkDetector.wasBothEyesClosed else { return }
                         
@@ -76,18 +80,24 @@ struct NewDoodleView: View {
                     }
                     
                     Circle()
-                        .fill(.blue)
+                        .fill(SketchyTheme.Color.coral)
                         .frame(width: 12, height: 12)
+                        .shadow(color: SketchyTheme.Color.coral.opacity(0.85), radius: 9)
                         .position(
                             x: airpodsService.cursorPosition.x * proxy.size.width,
                             y: airpodsService.cursorPosition.y * proxy.size.height
                         )
                 }
-                .border(.primary)
+                .background(SketchyTheme.Color.canvas)
+                .overlay {
+                    Rectangle()
+                        .stroke(SketchyTheme.Color.teal.opacity(0.55), lineWidth: 1.5)
+                }
                 .padding()
             }
             statusInfo
         }
+        .sketchyPaper()
         .onDisappear(perform: {
             blinkDetector.stop()
             airpodsService.stopDeviceMotionUpdates()
@@ -137,35 +147,42 @@ struct NewDoodleView: View {
     private var statusInfo: some View {
         HStack {
             Label {
-                Text("Status")
+                Text("Blink to ink")
             } icon: {
                 Image(systemName: "eye")
             }
+            .font(SketchyTheme.Font.body(15, weight: .semibold))
             Spacer()
             HStack {
                 Text(formatTime(timeRemaining))
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(SketchyTheme.Color.coral)
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 24) // Vertical spacing inside the card
+        .padding(.horizontal, SketchyTheme.Spacing.medium)
+        .padding(.vertical, SketchyTheme.Spacing.large)
+        .sketchyBorder(
+            color: SketchyTheme.Color.ink(for: colorScheme).opacity(0.72),
+            fill: SketchyTheme.Color.paperShade(for: colorScheme)
+        )
         .padding(.horizontal)
     }
     
     private var prompt: some View {
         VStack {
-            Text("Doodle: Cat")
-                .font(.headline)
+            Text("Doodle dare: a cat")
+                .font(SketchyTheme.Font.heading(21))
+            Text("Aim for cat-ish.")
+                .font(SketchyTheme.Font.body(14))
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16) // Vertical spacing inside the card
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(
-                    Color(.gray).opacity(0.3)
-                ) // Adapts to Dark Mode automatically
+        .padding(.vertical, SketchyTheme.Spacing.medium)
+        .sketchyBorder(
+            color: SketchyTheme.Color.ink(for: colorScheme).opacity(0.72),
+            fill: SketchyTheme.Color.paperShade(for: colorScheme)
         )
-        .padding(.horizontal) // Spacing outside the card from screen edges
+        .padding(.horizontal)
     }
     
     private func formatTime(_ time: TimeInterval) -> String {

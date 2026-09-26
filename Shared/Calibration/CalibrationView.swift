@@ -1,38 +1,18 @@
-//
-//  CalibrationView.swift
-//  HeadDraw-iOS
-//
-//  Created by Pawandeep Sekhon on 26/9/26.
-//
-//
-//  CalibrationView.swift
-//  HeadDoodle
-//
-//  A 4-step wizard run right before a draw (or standalone, to adjust
-//  sensitivity): connect AirPods, center your head, test blink detection,
-//  then a ready screen with the sensitivity slider.
-//
-//  All the actual sensing is stubbed out as @State + TODOs — wire these up
-//  to CMHeadphoneMotionManager and your Vision blink pipeline later. The
-//  screens, transitions, and gating logic are real and won't need to
-//  change shape when you do.
-//
-
 import SwiftUI
 
 enum CalibrationStep: Int, CaseIterable, Equatable {
     case connectAirPods
     case centerHead
     case testBlink
-    //case ready
 }
 
 struct CalibrationView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @Binding var airpodsService: AirpodsMotionService
     @Binding var blinkDetector: BlinkDetector
-    
+
     let onComplete: () -> Void
-    
+
     @State private var step: CalibrationStep = .connectAirPods
 
     private let requiredBlinkCount = 3
@@ -41,9 +21,9 @@ struct CalibrationView: View {
         VStack(spacing: 0) {
             StepProgressDots(current: step)
                 .padding(.top, 24)
-            
+
             Spacer(minLength: 0)
-            
+
             Group {
                 switch step {
                 case .connectAirPods:
@@ -65,21 +45,20 @@ struct CalibrationView: View {
                         .onAppear {
                             blinkDetector.start()
                         }
-                    //TODO: Have a ready step to guide user :),
-                    // for them to change settings also
-//                case .ready:
-//                    ReadyStep(sensitivity: $sensitivity)
                 }
             }
             .transition(.opacity.combined(with: .scale(scale: 0.98)))
             .id(step)
-            
+
             Spacer(minLength: 0)
-            
+
             actionButton
                 .padding(.horizontal, 32)
                 .padding(.bottom, 32)
         }
+        .background(SketchyTheme.Color.paper(for: colorScheme).ignoresSafeArea())
+        .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme))
+        .tint(SketchyTheme.Color.teal)
         .animation(.easeInOut(duration: 0.25), value: step)
         .onChange(of: airpodsService.isHeadphoneConnected, initial: true) { _, connected in
             if connected {
@@ -90,229 +69,182 @@ struct CalibrationView: View {
         .onChange(of: step) { _, newStep in
             if newStep == .centerHead {
                 print("centering")
-                //airpodsService.beginCentering()
                 airpodsService.beginManualCalibration()
             }
         }
-        
-            // TODO: start CMHeadphoneMotionManager updates + the Vision blink
-            // session in .onAppear here, and tear them down in .onDisappear.
-            // TODO: also handle mid-flow failures (AirPods disconnect, no face
-            // detected) by resetting the relevant @State back to its "waiting"
-            // value rather than leaving the user stuck on a stale step.
     }
-    
+
     @ViewBuilder
     private var actionButton: some View {
         switch step {
         case .connectAirPods:
             Button("Continue") { advance() }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(SketchyButtonStyle())
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
                 .disabled(!airpodsService.isHeadphoneConnected)
-            
+
         case .centerHead:
             Button("Continue") { advance() }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(SketchyButtonStyle())
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
                 .disabled(!airpodsService.isCentered)
         case .testBlink:
-            Button("Start Doodling") { onComplete() }
-                .buttonStyle(.borderedProminent)
+            Button("Let's doodle") { onComplete() }
+                .buttonStyle(SketchyButtonStyle())
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
                 .disabled(blinkDetector.blinkCount < requiredBlinkCount)
-            
-//        case .ready:
-//            Button("Start drawing", action: onComplete)
-//                .buttonStyle(.borderedProminent)
-//                .controlSize(.large)
-//                .frame(maxWidth: .infinity)
         }
     }
-    
+
     private func advance() {
         guard let next = CalibrationStep(rawValue: step.rawValue + 1) else { return }
         step = next
     }
 }
 
-// MARK: - Step 1: Connect AirPods
-
 private struct ConnectAirPodsStep: View {
     let isConnected: Bool
-    
+
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.25), lineWidth: 2)
+                    .stroke(SketchyTheme.Color.teal.opacity(0.25), lineWidth: 2)
                     .frame(width: 112, height: 112)
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.45), lineWidth: 2)
+                    .stroke(SketchyTheme.Color.teal.opacity(0.45), lineWidth: 2)
                     .frame(width: 84, height: 84)
                 Circle()
-                    .fill(isConnected ? Color.green.opacity(0.15) : Color.accentColor.opacity(0.12))
+                    .fill(isConnected ? SketchyTheme.Color.teal.opacity(0.2) : SketchyTheme.Color.mustard.opacity(0.2))
                     .frame(width: 56, height: 56)
                 Image(systemName: isConnected ? "checkmark" : "headphones")
-                    .font(.system(size: 26, weight: .medium))
-                    .foregroundStyle(isConnected ? .green : .accentColor)
+                    .font(.system(size: 26, weight: .medium, design: .rounded))
+                    .foregroundStyle(isConnected ? SketchyTheme.Color.teal : SketchyTheme.Color.coral)
             }
-            
+
             VStack(spacing: 8) {
                 Text(isConnected ? "AirPods connected" : "Looking for AirPods…")
-                    .font(.title3.weight(.semibold))
+                    .font(SketchyTheme.Font.heading(22))
                 Text(isConnected
-                     ? "You're all set to move your head as the cursor."
-                     : "Put them in and make sure they're connected to this device.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                     ? "Their motion sensors are steering your pencil."
+                     : "Pop them in and connect them to this device.")
+                    .font(SketchyTheme.Font.body(16))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
             }
         }
     }
 }
 
-// MARK: - Step 2: Center head
 private struct CenterHeadStep: View {
     let isCentered: Bool
     let progress: Double
     let cursorPosition: CGPoint
     let onCalibrate: () -> Void
-    
+
     private let targetRadius: CGFloat = 28
-    
+
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
-                // Progress ring
                 Circle()
-                    .stroke(
-                        Color.secondary.opacity(0.2),
-                        lineWidth: 6
-                    )
-                
+                    .stroke(SketchyTheme.Color.mustard.opacity(0.28), lineWidth: 6)
+
                 Circle()
-                    .trim(
-                        from: 0,
-                        to: max(progress, 0.001)
-                    )
+                    .trim(from: 0, to: max(progress, 0.001))
                     .stroke(
-                        isCentered ? Color.green : Color.blue,
-                        style: StrokeStyle(
-                            lineWidth: 6,
-                            lineCap: .round
-                        )
+                        isCentered ? SketchyTheme.Color.teal : SketchyTheme.Color.coral,
+                        style: StrokeStyle(lineWidth: 6, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
-                    .animation(
-                        .easeOut(duration: 0.1),
-                        value: progress
-                    )
-                
-                    // Center target
+                    .animation(.easeOut(duration: 0.1), value: progress)
+
                 Circle()
                     .stroke(
-                        Color.accentColor.opacity(0.35),
-                        style: StrokeStyle(
-                            lineWidth: 1.5,
-                            dash: [3, 4]
-                        )
+                        SketchyTheme.Color.mustard.opacity(0.55),
+                        style: StrokeStyle(lineWidth: 1.5, dash: [3, 4])
                     )
-                    .frame(
-                        width: targetRadius * 2,
-                        height: targetRadius * 2
-                    )
-                
-                // Moving head position
+                    .frame(width: targetRadius * 2, height: targetRadius * 2)
+
                 GeometryReader { proxy in
                     Circle()
-                        .fill(
-                            isCentered
-                            ? Color.green
-                            : Color.accentColor
-                        )
+                        .fill(isCentered ? SketchyTheme.Color.teal : SketchyTheme.Color.coral)
                         .frame(width: 10, height: 10)
                         .position(
                             x: cursorPosition.x * proxy.size.width,
                             y: cursorPosition.y * proxy.size.height
                         )
-                        .animation(
-                            .easeOut(duration: 0.08),
-                            value: cursorPosition
-                        )
+                        .animation(.easeOut(duration: 0.08), value: cursorPosition)
                 }
             }
             .frame(width: 150, height: 150)
-            
+
             VStack(spacing: 8) {
-                Text(
-                    isCentered
-                    ? "Baseline captured"
-                    : "Hold your head in the center"
-                )
-                .font(.title3.weight(.semibold))
-                
-                Text(
-                    isCentered
-                    ? "You're ready to draw."
-                    : "Keep the dot inside the circle."
-                )
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-                
+                Text(isCentered ? "Baseline captured" : "Center your head")
+                    .font(SketchyTheme.Font.heading(22))
+
+                Text(isCentered
+                     ? "You're ready to draw."
+                     : "Keep the dot in the circle. Stillness: surprisingly useful.")
+                    .font(SketchyTheme.Font.body(16))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+
                 Button {
                     onCalibrate()
                 } label: {
-                    Text("Calibrate")
+                    Text("Find my center")
                 }
-
+                .buttonStyle(SketchyButtonStyle(tone: .paper))
             }
-            
         }
     }
 }
 
-// MARK: - Step 3: Test blink
-
 private struct TestBlinkStep: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let detectedCount: Int
     let requiredCount: Int
-    
+
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.black)
+                SketchyBorder()
+                    .fill(SketchyTheme.Color.ink(for: colorScheme))
+                    .overlay {
+                        SketchyBorder()
+                            .stroke(SketchyTheme.Color.ink(for: colorScheme), lineWidth: 2)
+                    }
                     .frame(width: 140, height: 140)
                 Image(systemName: "eye")
-                    .font(.system(size: 44))
-                    .foregroundStyle(.orange)
+                    .font(.system(size: 44, design: .rounded))
+                    .foregroundStyle(SketchyTheme.Color.mustard)
             }
-            
+
             VStack(spacing: 8) {
-                Text("Blink a couple times")
-                    .font(.title3.weight(.semibold))
-                Text("We'll use this to set your personal blink threshold.")
-                    .font(.subheadline)
+                Text("Blink three times")
+                    .font(SketchyTheme.Font.heading(22))
+                Text("We're checking your blink signal. No need to make it theatrical.")
+                    .font(SketchyTheme.Font.body(16))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
-            
+
             HStack(spacing: 10) {
                 ForEach(0..<requiredCount, id: \.self) { index in
                     ZStack {
                         Circle()
-                            .fill(index < detectedCount ? Color.green : Color.secondary.opacity(0.15))
+                            .fill(index < detectedCount ? SketchyTheme.Color.teal : SketchyTheme.Color.paperShade(for: colorScheme))
                         if index < detectedCount {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
                         }
                     }
@@ -323,44 +255,9 @@ private struct TestBlinkStep: View {
     }
 }
 
-// MARK: - Step 4: Ready
-
-//private struct ReadyStep: View {
-//    @Binding var sensitivity: Double
-//    
-//    var body: some View {
-//        VStack(spacing: 32) {
-//            VStack(alignment: .leading, spacing: 12) {
-//                Label("AirPods connected", systemImage: "checkmark.circle.fill")
-//                    .foregroundStyle(.green)
-//                Label("Head centered", systemImage: "checkmark.circle.fill")
-//                    .foregroundStyle(.green)
-//                Label("Blink detection ready", systemImage: "checkmark.circle.fill")
-//                    .foregroundStyle(.green)
-//            }
-//            .font(.subheadline.weight(.medium))
-//            
-//            VStack(spacing: 8) {
-//                HStack {
-//                    Text("Sensitivity")
-//                        .font(.subheadline.weight(.medium))
-//                    Spacer()
-//                    Text(String(format: "%.1fx", sensitivity))
-//                        .font(.subheadline)
-//                        .foregroundStyle(.secondary)
-//                }
-//                Slider(value: $sensitivity, in: 0.5...2.0, step: 0.1)
-//            }
-//            .padding(.horizontal, 32)
-//        }
-//    }
-//}
-
-    // MARK: - Progress dots
-
 private struct StepProgressDots: View {
     let current: CalibrationStep
-    
+
     var body: some View {
         HStack(spacing: 6) {
             ForEach(CalibrationStep.allCases, id: \.self) { step in
@@ -370,22 +267,18 @@ private struct StepProgressDots: View {
             }
         }
     }
-    
+
     private func color(for step: CalibrationStep) -> Color {
-        if step.rawValue < current.rawValue { return .green }
-        if step == current { return .accentColor }
-        return Color.secondary.opacity(0.3)
+        if step.rawValue < current.rawValue { return SketchyTheme.Color.teal }
+        if step == current { return SketchyTheme.Color.coral }
+        return SketchyTheme.Color.mustard.opacity(0.35)
     }
 }
 
 #Preview("Connect AirPods") {
     CalibrationView(
-airpodsService: .constant(AirpodsMotionService()),
-blinkDetector: .constant(
-    BlinkDetector()
-),
-onComplete: {
-        //
-},
+        airpodsService: .constant(AirpodsMotionService()),
+        blinkDetector: .constant(BlinkDetector()),
+        onComplete: {}
     )
 }

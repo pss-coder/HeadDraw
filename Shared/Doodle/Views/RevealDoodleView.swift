@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct RevealDoodleView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let drawing: DrawingModel
     // new doodle <- basically clear everything, and restart again
     let onNewDoodle: (DrawingModel) -> Void
@@ -19,10 +21,9 @@ struct RevealDoodleView: View {
             VStack {
                     // Prompt
                 HStack {
-                    Text("Your doodle is ready!")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                    Text("A masterpiece-ish!")
+                        .font(SketchyTheme.Font.heading(30))
+                        .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme))
                         .padding(.bottom, 10)
                 }
                 
@@ -33,7 +34,11 @@ struct RevealDoodleView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .frame(height: 350)
-                        .border(.primary)
+                        .padding(8)
+                        .sketchyBorder(
+                            color: SketchyTheme.Color.ink(for: colorScheme),
+                            fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                        )
                 }
                     // Button
                 VStack(spacing: 12) {
@@ -43,44 +48,26 @@ struct RevealDoodleView: View {
                             let imageUrl = shareImageRenderer()
                             ShareLink(
                                 item: imageUrl,
-                                preview: SharePreview("My Doodle")
+                                preview: SharePreview("My HeadDraw doodle")
                             ) {
-                                Label("Share Image", systemImage: "square.and.arrow.up")
+                                Label("Share doodle", systemImage: "square.and.arrow.up")
                             }
-                            .buttonStyle(
-                                MinimalButtonStyle(
-                                    backgroundColor: .clear,
-                                    foregroundColor: .primary,
-                                    borderColor: Color.primary.opacity(0.2)
-                                )
-                            )
+                            .buttonStyle(SketchyButtonStyle(tone: .paper))
                         }
                         Button {
                             onNewDoodle(drawing)
                         } label: {
-                            Label("New Doodle", systemImage: "plus")
+                            Label("Go again", systemImage: "plus")
                         }
-                        .buttonStyle(
-                            MinimalButtonStyle(
-                                backgroundColor: .clear,
-                                foregroundColor: .primary,
-                                borderColor: Color.primary.opacity(0.2)
-                            )
-                        )
+                        .buttonStyle(SketchyButtonStyle(tone: .paper))
                     }
                     Button {
                         //TODO: pass the data
                         onDoodleSave(drawing)
                     } label: {
-                        Label("Save", systemImage: "checkmark")
+                        Label("Save to gallery", systemImage: "checkmark")
                     }
-                    .buttonStyle(
-                        MinimalButtonStyle(
-                            backgroundColor: .primary,
-                            foregroundColor: Color(.systemBackground),
-                            borderColor: .primary
-                        )
-                    )
+                    .buttonStyle(SketchyButtonStyle())
                 }
                 .padding()
             }
@@ -91,6 +78,7 @@ struct RevealDoodleView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false) // Allows tapping buttons underneath
         }
+        .sketchyPaper()
     }
     
     func shareImageRenderer() -> URL {

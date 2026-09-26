@@ -10,6 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
     @State private var viewModel = HomeViewModel()
     
     var body: some View {
@@ -22,8 +23,9 @@ struct HomeView: View {
                 Spacer()
                 
             }
-            .navigationTitle("HeadDoodle")
-            .navigationSubtitle("Doodle with your head, blink to ink")
+            .navigationTitle("HeadDraw")
+            .navigationSubtitle("Tilt to draw. Blink to ink. Laugh at the results.")
+            .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     settingsNavButton
@@ -42,9 +44,19 @@ struct HomeView: View {
                 case .gallery:
                     GalleryListView()
                 case .settings:
-                    Text("Settings screen")
+                    Text("Settings are still on the drawing board.")
+                        .font(SketchyTheme.Font.heading(24))
+                        .multilineTextAlignment(.center)
+                        .padding(SketchyTheme.Spacing.large)
+                        .sketchyBorder(
+                            color: SketchyTheme.Color.ink(for: colorScheme),
+                            fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                        )
+                        .padding()
+                        .sketchyPaper()
                 }
             }
+            .sketchyPaper()
         }
         .fullScreenCover(item: $viewModel.finishedDrawing) { drawing in
             RevealDoodleView(
@@ -67,6 +79,8 @@ struct HomeView: View {
     var settingsNavButton: some View {
         NavigationLink(value: AppRoute.settings) {
             Label("", systemImage: "gear")
+                .font(.system(size: 17, weight: .medium, design: .rounded))
+                .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme))
         }
     }
     
@@ -75,13 +89,12 @@ struct HomeView: View {
             viewModel.startDoodle()
         }, label: {
             Label("Start Doodle", systemImage: "scribble.variable")
-                .font(.title2)
-                .padding()
+                .font(SketchyTheme.Font.heading(23))
+                .padding(.vertical, SketchyTheme.Spacing.small)
                 .frame(maxWidth: .infinity)
-                .cornerRadius(10)
         })
         .padding(.horizontal)
-        .buttonStyle(.glassProminent)
+        .buttonStyle(SketchyButtonStyle())
 
     }
     
@@ -89,17 +102,18 @@ struct HomeView: View {
         VStack {
             HStack {
                 Text("Recent Doodles")
-                    .font(.title3)
-                    .bold()
+                    .font(SketchyTheme.Font.heading(22))
                 Spacer()
                 NavigationLink(value: AppRoute.gallery) {
-                    Text("View More")
+                    Text("See all")
+                        .font(SketchyTheme.Font.body(15, weight: .semibold))
+                        .foregroundStyle(SketchyTheme.Color.teal)
                 }
             }
             
             GalleryView(limit: 6)
         }
-        .padding()
+        .padding(SketchyTheme.Spacing.medium)
     }
     
 }
