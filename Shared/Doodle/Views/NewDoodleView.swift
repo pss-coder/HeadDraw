@@ -14,6 +14,8 @@ struct NewDoodleView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var timeRemaining: TimeInterval = 15
     @State private var hasFinished = false
+    @State private var isPaused = false
+    @State private var isPauseDialogPresented = false
     
     @Binding var airpodsService: AirpodsMotionService
     @Binding var blinkDetector: BlinkDetector
@@ -45,7 +47,7 @@ struct NewDoodleView: View {
                     .colorMultiply(SketchyTheme.Color.teal)
                     .shadow(color: SketchyTheme.Color.teal.opacity(0.42), radius: 5)
                     .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
-                        guard areBothEyesOpen else { return }
+                        guard !isPaused, areBothEyesOpen else { return }
                         
                         let position = CGPoint(
                             x: newValue.x * proxy.size.width,
@@ -63,6 +65,8 @@ struct NewDoodleView: View {
                         }
                     }
                     .onChange(of: areBothEyesOpen) { wasOpen, isOpen in
+                        guard !isPaused else { return }
+
                         if wasOpen && !isOpen {
                             finishCurrentStroke()
                         } else if !wasOpen && isOpen {
@@ -104,17 +108,29 @@ struct NewDoodleView: View {
         .toolbar(content: {
             ToolbarItem(placement: .destructiveAction) {
                 Button {
-                    //TODO: Stop
-                    dismiss()
+                    isPaused = true
+                    drawingPoints.removeAll()
+                    newDrawing = PKDrawing(strokes: airPodsStrokes)
+                    isPauseDialogPresented = true
                 } label: {
-                    Image(systemName: "stop.fill")
+                    Image(systemName: "pause.fill")
                 }
-                .foregroundStyle(Color.red)
-
             }
         })
+        .confirmationDialog(
+            "Doodle paused",
+            isPresented: $isPauseDialogPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Stop", role: .destructive) {
+                dismiss()
+            }
+            Button("Resume") {
+                isPaused = false
+            }
+        }
         .onReceive(timer) { _ in
-            guard !hasFinished else { return }
+            guard !hasFinished, !isPaused else { return }
 
             if timeRemaining > 0 {
                 timeRemaining -= 1
