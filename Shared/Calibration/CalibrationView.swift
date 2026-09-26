@@ -47,6 +47,10 @@ struct CalibrationView: View {
                     Button {
                         blinkDetector.stop()
                         airpodsService.stopDeviceMotionUpdates()
+                        
+                        blinkDetector = BlinkDetector()
+                        airpodsService = AirpodsMotionService()
+                        
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
