@@ -1,0 +1,155 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "solid" : "srgb:0.91765,0.88235,0.79216,1.00000"
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "solid" : "srgb:0.20392,0.19608,0.10196,1.00000"
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "wave.3.left.svg",
+          "name" : "wave.3.left",
+          "position" : {
+            "scale" : 0.5,
+            "translation-in-points" : [
+              -322.8077080338073,
+              -259.4013474725541
+            ]
+          }
+        },
+        {
+          "glass" : false,
+          "image-name" : "wave.3.right.svg",
+          "name" : "wave.3.right",
+          "position" : {
+            "scale" : 0.5,
+            "translation-in-points" : [
+              319.6316073588866,
+              -259.4013474725541
+            ]
+          }
+        },
+        {
+          "glass-specializations" : [
+            {
+              "value" : false
+            },
+            {
+              "appearance" : "dark",
+              "value" : false
+            },
+            {
+              "appearance" : "tinted",
+              "value" : false
+            }
+          ],
+          "image-name" : "scribble.svg",
+          "name" : "scribble",
+          "position" : {
+            "scale" : 2,
+            "translation-in-points" : [
+              -11.928910653679395,
+              -239.66730038480944
+            ]
+          }
+        },
+        {
+          "glass-specializations" : [
+            {
+              "value" : false
+            },
+            {
+              "appearance" : "dark",
+              "value" : false
+            },
+            {
+              "appearance" : "tinted",
+              "value" : false
+            }
+          ],
+          "image-name" : "person.svg",
+          "name" : "person",
+          "position" : {
+            "scale" : 6,
+            "translation-in-points" : [
+              0,
+              -52.903567143133046
+            ]
+          }
+        },
+        {
+          "glass-specializations" : [
+            {
+              "value" : false
+            },
+            {
+              "appearance" : "dark",
+              "value" : false
+            },
+            {
+              "appearance" : "tinted",
+              "value" : false
+            }
+          ],
+          "image-name" : "airpod.left.svg",
+          "name" : "airpod.left",
+          "position" : {
+            "scale" : 2,
+            "translation-in-points" : [
+              -244.37430921839723,
+              -186.62999997620636
+            ]
+          }
+        },
+        {
+          "glass-specializations" : [
+            {
+              "value" : false
+            },
+            {
+              "appearance" : "dark",
+              "value" : false
+            },
+            {
+              "appearance" : "tinted",
+              "value" : false
+            }
+          ],
+          "image-name" : "airpod.right.svg",
+          "name" : "airpod.right",
+          "position" : {
+            "scale" : 2,
+            "translation-in-points" : [
+              242.54367096713383,
+              -186.62999997620636
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
