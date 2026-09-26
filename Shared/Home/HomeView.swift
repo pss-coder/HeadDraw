@@ -52,16 +52,7 @@ struct HomeView: View {
                 case .gallery:
                     GalleryListView()
                 case .settings:
-                    Text("Settings are still on the drawing board.")
-                        .font(SketchyTheme.Font.heading(24))
-                        .multilineTextAlignment(.center)
-                        .padding(SketchyTheme.Spacing.large)
-                        .sketchyBorder(
-                            color: SketchyTheme.Color.ink(for: colorScheme),
-                            fill: SketchyTheme.Color.paperShade(for: colorScheme)
-                        )
-                        .padding()
-                        .sketchyPaper()
+                    SettingsView()
                 }
             }
         }
