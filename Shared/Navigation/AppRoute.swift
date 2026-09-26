@@ -8,7 +8,6 @@ enum AppRoute: String {
     //case home
     case gallery
     case new_doodle
-    case view_doodle
     case settings
     
 }

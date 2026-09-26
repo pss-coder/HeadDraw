@@ -8,8 +8,6 @@ import SwiftUI
 import SwiftData
 
 struct GalleryView: View {
-    @Environment(\.modelContext) private var modelContext
-    
     // Show drawings starting with most recent on top
     @Query(
         sort: \DrawingModel.createdAt,
@@ -42,16 +40,21 @@ struct GalleryView: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(displayedDrawings) { drawing in
-                GeometryReader { geometry in
-                    if let image = UIImage(data: drawing.thumbnailData) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: geometry.size.width, height: geometry.size.width)
+                NavigationLink {
+                    DoodleDetailView(drawing: drawing)
+                } label: {
+                    GeometryReader { geometry in
+                        if let image = UIImage(data: drawing.thumbnailData) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: geometry.size.width, height: geometry.size.width)
+                        }
                     }
+                    .border(.primary.opacity(0.5))
+                    .aspectRatio(1, contentMode: .fit)
                 }
-                .border(.primary.opacity(0.5))
-                .aspectRatio(1, contentMode: .fit)
+                .buttonStyle(.plain)
             }
         }
     }

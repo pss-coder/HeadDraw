@@ -39,8 +39,6 @@ struct HomeView: View {
                             viewModel.finishDoodle(drawing)
                     })
                     .navigationBarBackButtonHidden(true)
-                case .view_doodle:
-                    DoodleDetailView()
                 case .gallery:
                     GalleryListView()
                 case .settings:
