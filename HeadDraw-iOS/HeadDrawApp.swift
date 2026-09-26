@@ -11,7 +11,7 @@ import SwiftUI
 struct HeadDrawApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HeadDrawRootView()
         }
     }
 }

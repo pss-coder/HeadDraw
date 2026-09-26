@@ -1,15 +1,17 @@
 //
 //  ContentView.swift
-//  HeadDraw
+//  HeadDraw-Mac
 //
-//  Created by Pawandeep Sekhon on 19/9/26.
+//  Created by Pawandeep Sekhon on 25/9/26.
 //
 
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        HomeView()
+        OnboardingView {
+            //
+        }
     }
 }
 
