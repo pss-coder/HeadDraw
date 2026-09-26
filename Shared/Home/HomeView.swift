@@ -56,17 +56,6 @@ struct HomeView: View {
             }
         }
         .fullScreenCover(item: $finishedDrawing) { drawing in
-//            RevealDoodleView(drawing: drawing ) onDoodleShare: { drawing in
-//                    //TODO: When user taps on share
-//            }, onNewDoodle: { drawing in
-//                    //TODO: When user wants a new doodle
-//                    // show alert, whether to save this one, else just new doodle
-//                finishedDrawing = nil
-//                isCalibrationViewPresented = true
-//            }, onDoodleSave: { drawing in
-//                finishedDrawing = nil
-//                //TODO: Pass data to save
-//            })
             RevealDoodleView(
                 drawing: drawing) { drawing in
                     // share drawing
@@ -76,13 +65,14 @@ struct HomeView: View {
                 } onDoodleSave: { drawing in
                     finishedDrawing = nil
                 }
-
         }
         .fullScreenCover(isPresented: $isCalibrationViewPresented) {
-            CalibrationView {
-                isCalibrationViewPresented = false
-                path.append(AppRoute.new_doodle)
-            }
+            CalibrationView(
+                airpodsService: $airpodsService,
+                blinkDetector: $blinkDetector) {
+                    isCalibrationViewPresented = false
+                    path.append(AppRoute.new_doodle)
+                }
         }
     }
     

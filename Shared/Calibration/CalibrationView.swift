@@ -28,28 +28,21 @@ enum CalibrationStep: Int, CaseIterable, Equatable {
 }
 
 struct CalibrationView: View {
+    @Binding var airpodsService: AirpodsMotionService
+    @Binding var blinkDetector: BlinkDetector
     
     let onComplete: () -> Void
     
     @State private var step: CalibrationStep = .connectAirPods
     
-        // MARK: - Stubbed sensing state
-        // Replace these with real values driven by CMHeadphoneMotionManager /
-        // Vision, and the Continue buttons below will gate correctly for free.
     
-        /// TODO: set from CMHeadphoneMotionManagerDelegate connect/disconnect.
-    @State private var isAirPodsConnected = false
-    
-        /// TODO: drive from your baseline-capture routine (0...1 while sampling).
-    @State private var centerHeadProgress: Double = 0
-        /// TODO: flip true once a stable CMDeviceMotion.attitude has been averaged.
-    @State private var isHeadCentered = false
-    
-        /// TODO: increment from your Vision blink-detection loop.
+    /// TODO: increment from your Vision blink-detection loop.
     @State private var detectedBlinkCount = 0
     private let requiredBlinkCount = 3
     
-    @AppStorage("cursorSensitivity") private var sensitivity: Double = 1.0
+    //@AppStorage("cursorSensitivity") private var sensitivity: Double = 1.0
+    
+
     
     var body: some View {
         VStack(spacing: 0) {
@@ -61,11 +54,21 @@ struct CalibrationView: View {
             Group {
                 switch step {
                 case .connectAirPods:
-                    ConnectAirPodsStep(isConnected: isAirPodsConnected)
+                    ConnectAirPodsStep(
+                        isConnected: airpodsService.isHeadphoneConnected
+                    )
                 case .centerHead:
-                    CenterHeadStep(isCentered: isHeadCentered, progress: centerHeadProgress)
+                    CenterHeadStep(
+                        isCentered: airpodsService.isCentered,
+                        progress: airpodsService.centeringProgress,
+                        cursorPosition: airpodsService.centeringPosition,
+                        onCalibrate: airpodsService.beginManualCalibration
+                    )
                 case .testBlink:
                     TestBlinkStep(detectedCount: detectedBlinkCount, requiredCount: requiredBlinkCount)
+                        .onAppear {
+                            blinkDetector.start()
+                        }
 //                case .ready:
 //                    ReadyStep(sensitivity: $sensitivity)
                 }
@@ -80,6 +83,20 @@ struct CalibrationView: View {
                 .padding(.bottom, 32)
         }
         .animation(.easeInOut(duration: 0.25), value: step)
+        .onChange(of: airpodsService.isHeadphoneConnected, initial: true) { _, connected in
+            if connected {
+                print("headphone connected, and start motion update")
+                airpodsService.startDeviceMotionUpdates()
+            }
+        }
+        .onChange(of: step) { _, newStep in
+            if newStep == .centerHead {
+                print("centering")
+                //airpodsService.beginCentering()
+                airpodsService.beginManualCalibration()
+            }
+        }
+        
             // TODO: start CMHeadphoneMotionManager updates + the Vision blink
             // session in .onAppear here, and tear them down in .onDisappear.
             // TODO: also handle mid-flow failures (AirPods disconnect, no face
@@ -96,7 +113,7 @@ struct CalibrationView: View {
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
                 //TODO: TO ADD BACK, ONCE IMPLEMENTATION IS SET UP
-                //.disabled(!isAirPodsConnected)
+                .disabled(!airpodsService.isHeadphoneConnected)
             
         case .centerHead:
             Button("Continue") { advance() }
@@ -104,7 +121,22 @@ struct CalibrationView: View {
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
                 //TODO: TO ADD BACK, ONCE IMPLEMENTATION IS SET UP
-                //.disabled(!isHeadCentered)
+                .disabled(!airpodsService.isCentered)
+//        case .centerHead:
+//            Button(airpodsService.isCentered ? "Centered!" : "Calibrate") {
+//                airpodsService.captureBaseline()
+//                    // Small delay so the ring's green flash is actually visible
+//                    // before the step transitions away — otherwise it reads as
+//                    // an instant cut with no feedback that the tap registered.
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+//                    advance()
+//                }
+//            }
+//            .buttonStyle(.borderedProminent)
+//            .controlSize(.large)
+//            .frame(maxWidth: .infinity)
+//            .disabled(airpodsService.isCentered)
+
             
         case .testBlink:
             Button("Start Doodling") { onComplete() }
@@ -166,40 +198,109 @@ private struct ConnectAirPodsStep: View {
 }
 
 // MARK: - Step 2: Center head
-
 private struct CenterHeadStep: View {
     let isCentered: Bool
-        /// 0...1, how far through the baseline-capture window we are.
     let progress: Double
+    let cursorPosition: CGPoint
+    let onCalibrate: () -> Void
+    
+    private let targetRadius: CGFloat = 28
     
     var body: some View {
         VStack(spacing: 24) {
+            
             ZStack {
+                    // Progress ring
                 Circle()
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 6)
+                    .stroke(
+                        Color.secondary.opacity(0.2),
+                        lineWidth: 6
+                    )
+                
                 Circle()
-                    .trim(from: 0, to: max(progress, 0.001))
-                    .stroke(isCentered ? Color.green : Color.blue,
-                            style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                    .trim(
+                        from: 0,
+                        to: max(progress, 0.001)
+                    )
+                    .stroke(
+                        isCentered ? Color.green : Color.blue,
+                        style: StrokeStyle(
+                            lineWidth: 6,
+                            lineCap: .round
+                        )
+                    )
                     .rotationEffect(.degrees(-90))
+                    .animation(
+                        .easeOut(duration: 0.1),
+                        value: progress
+                    )
+                
+                    // Center target
                 Circle()
-                    .stroke(Color.accentColor.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, dash: [3, 4]))
-                    .frame(width: 74, height: 74)
-                Circle()
-                    .fill(Color.accentColor)
-                    .frame(width: 8, height: 8)
+                    .stroke(
+                        Color.accentColor.opacity(0.35),
+                        style: StrokeStyle(
+                            lineWidth: 1.5,
+                            dash: [3, 4]
+                        )
+                    )
+                    .frame(
+                        width: targetRadius * 2,
+                        height: targetRadius * 2
+                    )
+                
+                // Moving head position
+                GeometryReader { proxy in
+                    Circle()
+                        .fill(
+                            isCentered
+                            ? Color.green
+                            : Color.accentColor
+                        )
+                        .frame(width: 10, height: 10)
+                        .position(
+                            x: cursorPosition.x * proxy.size.width,
+                            y: cursorPosition.y * proxy.size.height
+                        )
+                        .animation(
+                            .easeOut(duration: 0.08),
+                            value: cursorPosition
+                        )
+                }
+//                
+//                    // Center point
+//                Circle()
+//                    .fill(Color.accentColor)
+//                    .frame(width: 6, height: 6)
             }
             .frame(width: 150, height: 150)
             
             VStack(spacing: 8) {
-                Text(isCentered ? "Baseline captured" : "Hold still, looking straight ahead")
-                    .font(.title3.weight(.semibold))
-                Text("This is your neutral position — every tilt from here moves the cursor.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
+                Text(
+                    isCentered
+                    ? "Baseline captured"
+                    : "Hold your head in the center"
+                )
+                .font(.title3.weight(.semibold))
+                
+                Text(
+                    isCentered
+                    ? "You're ready to draw."
+                    : "Keep the dot inside the circle."
+                )
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+                
+                Button {
+                    onCalibrate()
+                } label: {
+                    Text("Calibrate")
+                }
+
             }
+            
         }
     }
 }
@@ -305,5 +406,13 @@ private struct StepProgressDots: View {
 }
 
 #Preview("Connect AirPods") {
-    CalibrationView(onComplete: {})
+    CalibrationView(
+airpodsService: .constant(AirpodsMotionService()),
+blinkDetector: .constant(
+    BlinkDetector()
+),
+onComplete: {
+        //
+},
+    )
 }
