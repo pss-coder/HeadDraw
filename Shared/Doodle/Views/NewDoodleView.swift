@@ -18,6 +18,8 @@ struct NewDoodleView: View {
     @Binding var blinkDetector: BlinkDetector
     
     @State private var newDrawing: PKDrawing = PKDrawing()
+    
+    @State private var airPodsStrokes: [PKStroke] = []
     @State private var drawingPoints: [CGPoint] = []
     
     @State var isTouching: Bool = false
@@ -39,20 +41,38 @@ struct NewDoodleView: View {
                         drawing: newDrawing,
                     )
                     .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
-                        // we draw points on to the canvas
-                        // we append only if eyes was closed
                         guard blinkDetector.wasBothEyesClosed else { return }
                         
-                        let position = CGPoint(x: airpodsService.cursorPosition.x * proxy.size.width,
-                                               y: airpodsService.cursorPosition.y * proxy.size.height)
+                        let position = CGPoint(
+                            x: newValue.x * proxy.size.width,
+                            y: newValue.y * proxy.size.height
+                        )
                         
-                        // pass the new position of the cursor over to canvas drawing points to draw 
                         drawingPoints.append(position)
                         
-                        //canvasView receives the latest drawing and renders it.
-                        newDrawing = makeAirPodsDrawing(
-                            from: drawingPoints
-                        )
+                        if drawingPoints.count >= 2 {
+                            let currentStroke = makeAirPodsStroke(from: drawingPoints)
+                            
+                            newDrawing = PKDrawing(
+                                strokes: airPodsStrokes + [currentStroke]
+                            )
+                        }
+                    }
+                    .onChange(of: blinkDetector.wasBothEyesClosed) { wasClosed, isClosed in
+                            // Eyes just opened
+                        if wasClosed && !isClosed {
+                            guard drawingPoints.count >= 2 else {
+                                drawingPoints.removeAll()
+                                return
+                            }
+                            
+                            let stroke = makeAirPodsStroke(from: drawingPoints)
+                            
+                            airPodsStrokes.append(stroke)
+                            drawingPoints.removeAll()
+                            
+                            newDrawing = PKDrawing(strokes: airPodsStrokes)
+                        }
                     }
                     
                     Circle()
@@ -153,13 +173,9 @@ struct NewDoodleView: View {
         return String(format: "00:%02d", seconds)
     }
     
-    private func makeAirPodsDrawing(
+    private func makeAirPodsStroke(
         from points: [CGPoint]
-    ) -> PKDrawing {
-        
-        guard points.count >= 2 else {
-            return PKDrawing()
-        }
+    ) -> PKStroke {
         
         let strokePoints = points.enumerated().map {
             PKStrokePoint(
@@ -178,16 +194,12 @@ struct NewDoodleView: View {
             creationDate: Date()
         )
         
-        let stroke = PKStroke(
+        return PKStroke(
             ink: PKInk(
                 .pen,
                 color: .black
             ),
             path: path
-        )
-        
-        return PKDrawing(
-            strokes: [stroke]
         )
     }
 }
