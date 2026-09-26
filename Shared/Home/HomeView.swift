@@ -13,6 +13,7 @@ struct HomeView: View {
     @State private var isShowRevealDoodleViewPresented : Bool = false
     @State private var isCalibrationViewPresented: Bool = false
     
+    
     var body: some View {
         NavigationStack(path: $path) {
             VStack {
@@ -43,7 +44,7 @@ struct HomeView: View {
                 case .view_doodle:
                     DoodleDetailView()
                 case .gallery:
-                    Text("Doodle List")
+                    GalleryListView()
                 case .settings:
                     Text("Settings screen")
                 }
@@ -103,43 +104,9 @@ struct HomeView: View {
                 }
             }
             
-            GalleryView()
+            GalleryView(limit: 6)
         }
         .padding()
-    }
-}
-
-//TODO: to include the query, and make re-usable with a flag
-struct GalleryView: View {
-    let photos = (1...9).map { "photo_\($0)" }
-    @State private var isExpanded = false
-    
-    private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16),
-    ]
-    
-    var visiblePhotos: [String] {
-        if isExpanded {
-            return photos
-        } else {
-            return Array(photos.prefix(9)) // Safely takes up to the first 6 items
-        }
-    }
-    
-    var body: some View {
-        LazyVGrid(columns: columns, spacing: 16) {
-            ForEach(visiblePhotos, id: \.self) { photoName in
-                GeometryReader { geometry in
-                    Image(systemName: "scribble.variable")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: geometry.size.width, height: geometry.size.width)
-                }
-                .aspectRatio(1, contentMode: .fit)
-            }
-        }
     }
 }
 
