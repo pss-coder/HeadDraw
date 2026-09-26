@@ -647,6 +647,7 @@
 				DEVELOPMENT_TEAM = RK9FBC2R6X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink";
 				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -682,6 +683,7 @@
 				DEVELOPMENT_TEAM = RK9FBC2R6X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink";
 				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -811,6 +813,7 @@
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
@@ -860,6 +863,7 @@
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
