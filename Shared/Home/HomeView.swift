@@ -63,15 +63,14 @@ struct HomeView: View {
         }
         .fullScreenCover(item: $finishedDrawing) { drawing in
             RevealDoodleView(
-                drawing: drawing) { drawing in
-                    // share drawing
-                } onNewDoodle: { drawing in
+                drawing: drawing,
+                    onNewDoodle: { drawing in
                     finishedDrawing = nil
                     isCalibrationViewPresented = true
-                } onDoodleSave: { drawing in
+                }, onDoodleSave: { drawing in
                     finishedDrawing = nil
                     saveDrawing(drawing)
-                }
+                })
         }
         .fullScreenCover(isPresented: $isCalibrationViewPresented) {
             CalibrationView(

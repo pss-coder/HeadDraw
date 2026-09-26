@@ -9,9 +9,6 @@ import SwiftUI
 
 struct RevealDoodleView: View {
     let drawing: DrawingModel
-    
-    // share handler
-    let onDoodleShare: (DrawingModel) -> Void
     // new doodle <- basically clear everything, and restart again
     let onNewDoodle: (DrawingModel) -> Void
     // save doodle
@@ -41,22 +38,24 @@ struct RevealDoodleView: View {
                     // Button
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
-                        Button {
-                            // Share
-                            onDoodleShare(drawing)
-                        } label: {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
-                        .buttonStyle(
-                            MinimalButtonStyle(
-                                backgroundColor: .clear,
-                                foregroundColor: .primary,
-                                borderColor: Color.primary.opacity(0.2)
-                            )
-                        )
                         
+                        if let _ = drawing.thumbnailImage {
+                            let imageUrl = shareImageRenderer()
+                            ShareLink(
+                                item: imageUrl,
+                                preview: SharePreview("My Doodle")
+                            ) {
+                                Label("Share Image", systemImage: "square.and.arrow.up")
+                            }
+                            .buttonStyle(
+                                MinimalButtonStyle(
+                                    backgroundColor: .clear,
+                                    foregroundColor: .primary,
+                                    borderColor: Color.primary.opacity(0.2)
+                                )
+                            )
+                        }
                         Button {
-                            // New Doodle
                             onNewDoodle(drawing)
                         } label: {
                             Label("New Doodle", systemImage: "plus")
@@ -69,7 +68,6 @@ struct RevealDoodleView: View {
                             )
                         )
                     }
-                    
                     Button {
                         //TODO: pass the data
                         onDoodleSave(drawing)
@@ -94,17 +92,26 @@ struct RevealDoodleView: View {
                 .allowsHitTesting(false) // Allows tapping buttons underneath
         }
     }
+    
+    func shareImageRenderer() -> URL {
+        let renderer = ImageRenderer(content: Image(uiImage: drawing.thumbnailImage!))
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("doodle.png")
+        
+        if let data = renderer.uiImage?.pngData() {
+            try? data.write(to: tempURL)
+        }
+        return tempURL
+    }
 }
 
 #Preview {
     RevealDoodleView(
         drawing: DrawingModel(drawingData: .init(), thumbnailData: .init())
-    ) { _ in
+    ,
+    onNewDoodle: { _ in
         //
-    } onNewDoodle: { _ in
+    } ,onDoodleSave: { _ in
         //
-    } onDoodleSave: { _ in
-        //
-    }
+    })
 
 }
