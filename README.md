@@ -1,3 +1,6 @@
+
+<img src="screenshots/HeadDraw.png" alt="Description" width="20%">
+
 # HeadDraw
 
 [![Swift](https://img.shields.io/badge/Swift-5-orange.svg)](https://swift.org)
@@ -10,9 +13,10 @@ HeadDraw is a playful, hands-free drawing app for iPhone, iPad, and Mac. Steer t
 ---
 
 ## Screenshots & Demo
-
-Screenshots and a demo GIF are not included in the repository yet.
-
+Quick Video done up by Remotion
+<video src="screenshots/head-draw-app-store-promo.mp4" width="600" controls>
+  Your browser does not support the video tag.
+</video>
 ---
 
 ## Features
