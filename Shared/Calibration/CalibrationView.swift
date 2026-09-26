@@ -34,16 +34,9 @@ struct CalibrationView: View {
     let onComplete: () -> Void
     
     @State private var step: CalibrationStep = .connectAirPods
-    
-    
-    /// TODO: increment from your Vision blink-detection loop.
-    @State private var detectedBlinkCount = 0
-    private let requiredBlinkCount = 3
-    
-    //@AppStorage("cursorSensitivity") private var sensitivity: Double = 1.0
-    
 
-    
+    private let requiredBlinkCount = 3
+
     var body: some View {
         VStack(spacing: 0) {
             StepProgressDots(current: step)
@@ -65,10 +58,15 @@ struct CalibrationView: View {
                         onCalibrate: airpodsService.beginManualCalibration
                     )
                 case .testBlink:
-                    TestBlinkStep(detectedCount: detectedBlinkCount, requiredCount: requiredBlinkCount)
+                    TestBlinkStep(
+                        detectedCount: blinkDetector.blinkCount,
+                        requiredCount: requiredBlinkCount
+                    )
                         .onAppear {
                             blinkDetector.start()
                         }
+                    //TODO: Have a ready step to guide user :),
+                    // for them to change settings also
 //                case .ready:
 //                    ReadyStep(sensitivity: $sensitivity)
                 }
@@ -112,7 +110,6 @@ struct CalibrationView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
-                //TODO: TO ADD BACK, ONCE IMPLEMENTATION IS SET UP
                 .disabled(!airpodsService.isHeadphoneConnected)
             
         case .centerHead:
@@ -120,31 +117,13 @@ struct CalibrationView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
-                //TODO: TO ADD BACK, ONCE IMPLEMENTATION IS SET UP
                 .disabled(!airpodsService.isCentered)
-//        case .centerHead:
-//            Button(airpodsService.isCentered ? "Centered!" : "Calibrate") {
-//                airpodsService.captureBaseline()
-//                    // Small delay so the ring's green flash is actually visible
-//                    // before the step transitions away — otherwise it reads as
-//                    // an instant cut with no feedback that the tap registered.
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-//                    advance()
-//                }
-//            }
-//            .buttonStyle(.borderedProminent)
-//            .controlSize(.large)
-//            .frame(maxWidth: .infinity)
-//            .disabled(airpodsService.isCentered)
-
-            
         case .testBlink:
             Button("Start Doodling") { onComplete() }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
-            //TODO: TO ADD BACK, ONCE IMPLEMENTATION IS SET UP
-                //.disabled(detectedBlinkCount < requiredBlinkCount)
+                .disabled(blinkDetector.blinkCount < requiredBlinkCount)
             
 //        case .ready:
 //            Button("Start drawing", action: onComplete)
@@ -208,9 +187,8 @@ private struct CenterHeadStep: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            
             ZStack {
-                    // Progress ring
+                // Progress ring
                 Circle()
                     .stroke(
                         Color.secondary.opacity(0.2),
@@ -267,11 +245,6 @@ private struct CenterHeadStep: View {
                             value: cursorPosition
                         )
                 }
-//                
-//                    // Center point
-//                Circle()
-//                    .fill(Color.accentColor)
-//                    .frame(width: 6, height: 6)
             }
             .frame(width: 150, height: 150)
             
