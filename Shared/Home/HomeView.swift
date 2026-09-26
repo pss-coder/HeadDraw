@@ -10,7 +10,9 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(HomeViewModel.self) var viewModel
+#if os(iOS)
     
+#endif
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
 
@@ -38,7 +40,9 @@ struct HomeView: View {
             })
             .navigationTitle("HeadDraw")
             .navigationSubtitle("Eyes open to Draw, blink and you miss the ink.")
+#if os(iOS)
             .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
+#endif
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     settingsNavButton
@@ -62,22 +66,15 @@ struct HomeView: View {
                 }
             }
         }
-        .fullScreenCover(item: $viewModel.finishedDrawing) { drawing in
-            RevealDoodleView(
-                drawing: drawing,
-                onNewDoodle: { _ in
-                    viewModel.startAnotherDoodle()
-                }, onDoodleSave: { drawing in
-                    viewModel.saveDrawing(drawing, in: modelContext)
-                })
-        }
-        .fullScreenCover(isPresented: $viewModel.isCalibrationViewPresented) {
-                CalibrationView(
-                airpodsService: $viewModel.airpodsService,
-                blinkDetector: $viewModel.blinkDetector) {
-                    viewModel.completeCalibration($0)
-                }
-        }
+        .headDrawPresentations(
+            finishedDrawing: $viewModel.finishedDrawing,
+            isCalibrationPresented: $viewModel.isCalibrationViewPresented,
+            airpodsService: $viewModel.airpodsService,
+            blinkDetector: $viewModel.blinkDetector,
+            onNewDoodle: { _ in viewModel.startAnotherDoodle() },
+            onDoodleSave: { viewModel.saveDrawing($0, in: modelContext) },
+            onCalibrationComplete: viewModel.completeCalibration
+        )
     }
     
     var settingsNavButton: some View {
@@ -143,6 +140,50 @@ struct HomeView: View {
         .padding(.vertical, SketchyTheme.Spacing.large)
     }
     
+}
+
+private extension View {
+    func headDrawPresentations(
+        finishedDrawing: Binding<DrawingModel?>,
+        isCalibrationPresented: Binding<Bool>,
+        airpodsService: Binding<AirpodsMotionService>,
+        blinkDetector: Binding<BlinkDetector>,
+        onNewDoodle: @escaping (DrawingModel) -> Void,
+        onDoodleSave: @escaping (DrawingModel) -> Void,
+        onCalibrationComplete: @escaping (DrawingMode) -> Void
+    ) -> some View {
+#if os(iOS)
+        fullScreenCover(item: finishedDrawing) { drawing in
+            RevealDoodleView(
+                drawing: drawing,
+                onNewDoodle: onNewDoodle,
+                onDoodleSave: onDoodleSave
+            )
+        }
+        .fullScreenCover(isPresented: isCalibrationPresented) {
+            CalibrationView(
+                airpodsService: airpodsService,
+                blinkDetector: blinkDetector,
+                onComplete: onCalibrationComplete
+            )
+        }
+#elseif os(macOS)
+        sheet(item: finishedDrawing) { drawing in
+            RevealDoodleView(
+                drawing: drawing,
+                onNewDoodle: onNewDoodle,
+                onDoodleSave: onDoodleSave
+            )
+        }
+        .sheet(isPresented: isCalibrationPresented) {
+            CalibrationView(
+                airpodsService: airpodsService,
+                blinkDetector: blinkDetector,
+                onComplete: onCalibrationComplete
+            )
+        }
+#endif
+    }
 }
 
 #Preview {

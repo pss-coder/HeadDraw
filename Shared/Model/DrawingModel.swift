@@ -58,7 +58,7 @@ extension DrawingModel {
         try? PKDrawing(data: drawingData)
     }
     
-    var thumbnailImage: UIImage? {
-        UIImage(data: thumbnailData)
+    var thumbnailImage: PlatformImage? {
+        PlatformImage(data: thumbnailData)
     }
 }

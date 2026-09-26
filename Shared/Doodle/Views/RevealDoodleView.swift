@@ -29,8 +29,8 @@ struct RevealDoodleView: View {
                 }
                 
                 // image
-                if let image = UIImage(data: drawing.thumbnailData) {
-                    Image(uiImage: image)
+                if let image = PlatformImage(data: drawing.thumbnailData) {
+                    Image(platformImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
@@ -107,10 +107,10 @@ struct RevealDoodleView: View {
     }
     
     func shareImageRenderer() -> URL {
-        let renderer = ImageRenderer(content: Image(uiImage: drawing.thumbnailImage!))
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("HeadDraw.png")
-        
-        if let data = renderer.uiImage?.pngData() {
+
+        if let image = drawing.thumbnailImage,
+           let data = PlatformImageRenderer.pngData(for: Image(platformImage: image)) {
             try? data.write(to: tempURL)
         }
         return tempURL

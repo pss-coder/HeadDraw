@@ -20,7 +20,7 @@ struct DoodleDetailView: View {
                     .font(SketchyTheme.Font.heading(28))
 
                 if let image = drawing.thumbnailImage {
-                    Image(uiImage: image)
+                    Image(platformImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
@@ -62,8 +62,10 @@ struct DoodleDetailView: View {
         }
         .sketchyPaper()
         .navigationTitle("Doodle")
+    #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
+    #endif
         .onAppear {
             shareURL = makeShareURL()
         }
@@ -72,8 +74,9 @@ struct DoodleDetailView: View {
     private func makeShareURL() -> URL? {
         guard let image = drawing.thumbnailImage else { return nil }
 
-        let renderer = ImageRenderer(content: Image(uiImage: image))
-        guard let data = renderer.uiImage?.pngData() else { return nil }
+        guard let data = PlatformImageRenderer.pngData(for: Image(platformImage: image)) else {
+            return nil
+        }
 
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("doodle-\(drawing.id.uuidString).png")

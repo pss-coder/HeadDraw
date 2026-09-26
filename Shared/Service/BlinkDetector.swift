@@ -6,6 +6,9 @@
 //
 import SwiftUI
 import AVFoundation
+#if os(macOS)
+import AppKit
+#endif
 
 import Vision
 import Observation
@@ -178,6 +181,7 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 
+#if os(iOS)
 struct CameraPreviewView: UIViewRepresentable {
     let session: AVCaptureSession
     
@@ -204,6 +208,35 @@ struct CameraPreviewView: UIViewRepresentable {
         var previewLayer: AVCaptureVideoPreviewLayer?
     }
 }
+#elseif os(macOS)
+struct CameraPreviewView: NSViewRepresentable {
+    let session: AVCaptureSession
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        view.wantsLayer = true
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+        view.layer?.addSublayer(previewLayer)
+        context.coordinator.previewLayer = previewLayer
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            context.coordinator.previewLayer?.frame = nsView.bounds
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    class Coordinator {
+        var previewLayer: AVCaptureVideoPreviewLayer?
+    }
+}
+#endif
 
 
 struct EyeBlinkTrackerView: View {

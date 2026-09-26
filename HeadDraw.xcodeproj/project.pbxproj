@@ -50,12 +50,30 @@
 		478462613066C63C00C1C784 /* Exceptions for "Shared" folder in "HeadDraw-Mac" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Calibration/CalibrationView.swift,
+				Canvas/Views/CanvasView.swift,
+				Canvas/Views/DottedPaper.metal,
+				Components/ButtonStyles.swift,
+				Components/Confetti.swift,
+				Components/SketchyTheme.swift,
+				Components/SupportedAirPodsModelsList.swift,
 				Doodle/Views/DoodleDetailView.swift,
 				Doodle/Views/NewDoodleView.swift,
 				Doodle/Views/RevealDoodleView.swift,
+				Gallery/GalleryListView.swift,
+				Gallery/GalleryView.swift,
 				HeadDrawRootView.swift,
+				Helper/AppIcon.swift,
+				Helper/PlatformImage.swift,
 				Home/HomeView.swift,
+				Home/HomeViewModel.swift,
+				Model/DrawingModel.swift,
+				Navigation/AppRoute.swift,
 				Onboarding/OnboardingView.swift,
+				Service/AirpodsMotionService.swift,
+				Service/BlinkDetector.swift,
+				Service/DrawingArchiveExporter.swift,
+				Settings/SettingsView.swift,
 			);
 			target = 478462373066C61C00C1C784 /* HeadDraw-Mac */;
 		};

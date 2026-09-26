@@ -23,8 +23,8 @@ extension Bundle {
 struct AppIconView: View {
     var body: some View {
         if let iconName = Bundle.main.appIconName,
-           let uiImage = UIImage(named: iconName) {
-            Image(uiImage: uiImage)
+           let image = PlatformImage.named(iconName) {
+            Image(platformImage: image)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)

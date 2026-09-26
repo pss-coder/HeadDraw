@@ -8,7 +8,17 @@
 import SwiftUI
 import Combine
 import PencilKit
+#if os(iOS)
 import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
+
+#if os(iOS)
+private typealias PlatformColor = UIColor
+#elseif os(macOS)
+private typealias PlatformColor = NSColor
+#endif
 
 struct NewDoodleView: View {
     @Environment(\.dismiss) var dismiss
@@ -204,7 +214,7 @@ struct NewDoodleView: View {
         let data = newDrawing.dataRepresentation()
         let thumbnail = newDrawing.image(from: newDrawing.bounds, scale: 1)
 
-        guard let thumbnailData = thumbnail.pngData() else { return }
+        guard let thumbnailData = thumbnail.encodedPNGData() else { return }
 
         onDoodleCompleted(DrawingModel(
             drawingData: data,
@@ -254,7 +264,7 @@ struct NewDoodleView: View {
         return PKStroke(
             ink: PKInk(
                 .pen,
-                color: UIColor(SketchyTheme.Color.teal)
+                color: PlatformColor(SketchyTheme.Color.teal)
             ),
             path: path
         )

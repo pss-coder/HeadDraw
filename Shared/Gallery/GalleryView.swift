@@ -46,8 +46,8 @@ struct GalleryView: View {
                     DoodleDetailView(drawing: drawing)
                 } label: {
                     GeometryReader { geometry in
-                        if let image = UIImage(data: drawing.thumbnailData) {
-                            Image(uiImage: image)
+                        if let image = PlatformImage(data: drawing.thumbnailData) {
+                            Image(platformImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: geometry.size.width, height: geometry.size.width)

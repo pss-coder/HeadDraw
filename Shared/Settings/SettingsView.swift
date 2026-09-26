@@ -106,7 +106,7 @@ struct SettingsView: View {
 
         do {
             let images = try drawings.map { drawing -> Data in
-                guard let image = drawing.thumbnailImage, let data = image.pngData() else {
+                guard let image = drawing.thumbnailImage, let data = image.encodedPNGData() else {
                     throw DrawingArchiveExporter.ExportError.invalidImage
                 }
                 return data

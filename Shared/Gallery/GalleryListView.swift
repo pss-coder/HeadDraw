@@ -18,8 +18,10 @@ struct GalleryListView: View {
         .sketchyPaper()
         .navigationTitle("Gallery")
         .navigationSubtitle("Your HeadDrawings")
+    #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
         .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
+    #endif
     }
 }
 
