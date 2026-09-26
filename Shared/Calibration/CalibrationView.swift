@@ -1,3 +1,22 @@
+//
+//  CalibrationView.swift
+//  HeadDraw-iOS
+//
+//  Created by Pawandeep Sekhon on 26/9/26.
+//
+//
+//  CalibrationView.swift
+//  HeadDoodle
+//
+//  A 4-step wizard run right before a draw (or standalone, to adjust
+//  sensitivity): connect AirPods, center your head, test blink detection,
+//  then a ready screen with the sensitivity slider.
+//
+//  All the actual sensing is stubbed out as @State + TODOs — wire these up
+//  to CMHeadphoneMotionManager and your Vision blink pipeline later. The
+//  screens, transitions, and gating logic are real and won't need to
+//  change shape when you do.
+//
 import SwiftUI
 
 enum CalibrationStep: Int, CaseIterable, Equatable {
@@ -66,10 +85,16 @@ struct CalibrationView: View {
                 airpodsService.startDeviceMotionUpdates()
             }
         }
+        .onChange(of: airpodsService.isCentered) { _, isCentered in
+            if isCentered {
+                SketchyFeedback.successHaptic()
+            }
+        }
         .onChange(of: step) { _, newStep in
             if newStep == .centerHead {
                 print("centering")
                 airpodsService.beginManualCalibration()
+                SketchyFeedback.lightHaptic()
             }
         }
     }
@@ -162,7 +187,8 @@ private struct CenterHeadStep: View {
                     )
                     .rotationEffect(.degrees(-90))
                     .animation(.easeOut(duration: 0.1), value: progress)
-
+                
+                // dotted circle
                 Circle()
                     .stroke(
                         SketchyTheme.Color.mustard.opacity(0.55),
@@ -196,6 +222,7 @@ private struct CenterHeadStep: View {
                     .padding(.horizontal, 32)
 
                 Button {
+                    SketchyFeedback.lightHaptic()
                     onCalibrate()
                 } label: {
                     Text("Tap to center manually")
@@ -252,6 +279,11 @@ private struct TestBlinkStep: View {
                     }
                     .frame(width: 36, height: 36)
                 }
+            }
+        }
+        .onChange(of: detectedCount) { oldCount, newCount in
+            if newCount > oldCount {
+                SketchyFeedback.lightHaptic()
             }
         }
     }

@@ -1,4 +1,36 @@
 import SwiftUI
+#if os(iOS)
+import AudioToolbox
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
+
+enum SketchyFeedback {
+    static func lightHaptic() {
+#if os(iOS)
+    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+#elseif os(macOS)
+    NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
+#endif
+    }
+
+    static func successHaptic() {
+#if os(iOS)
+    UINotificationFeedbackGenerator().notificationOccurred(.success)
+#elseif os(macOS)
+    NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .now)
+#endif
+    }
+
+    static func countdownCue() {
+#if os(iOS)
+    AudioServicesPlaySystemSound(1104)
+#elseif os(macOS)
+    NSSound(named: "Ping")?.play()
+#endif
+    }
+}
 
 enum SketchyTheme {
     enum Color {

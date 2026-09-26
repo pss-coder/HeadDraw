@@ -63,6 +63,10 @@ struct NewDoodleView: View {
                         }
                     }
                     .onChange(of: blinkDetector.wasBothEyesClosed) { wasClosed, isClosed in
+                        if !wasClosed && isClosed {
+                            SketchyFeedback.lightHaptic()
+                        }
+
                             // Eyes just opened
                         if wasClosed && !isClosed {
                             guard drawingPoints.count >= 2 else {
@@ -119,10 +123,12 @@ struct NewDoodleView: View {
 
             if timeRemaining > 0 {
                 timeRemaining -= 1
+                if timeRemaining <= 3 {
+                    SketchyFeedback.countdownCue()
+                }
             }
             if timeRemaining <= 0 {
                 hasFinished = true
-                //TODO: Pass the data data
                 let data = newDrawing.dataRepresentation()
                 
                 let thumbnail = newDrawing.image(
