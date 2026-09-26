@@ -80,7 +80,7 @@ final class AirpodsMotionService: NSObject {
     
         // MARK: - Cursor
     
-    private(set) var cursorPosition = CGPoint(
+    var cursorPosition = CGPoint(
         x: 0.5,
         y: 0.5
     )

@@ -10,7 +10,7 @@ import PencilKit
 struct HomeView: View {
     @State private var path: [AppRoute] = []
     
-    //@State private var isShowRevealDoodleViewPresented : Bool = false
+    //TODO: Pass as a View Model
     @State private var isCalibrationViewPresented: Bool = false
     
     @State private var airpodsService = AirpodsMotionService()
@@ -36,7 +36,10 @@ struct HomeView: View {
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .new_doodle:
-                    NewDoodleView(onDoodleCompleted: { drawing in
+                    NewDoodleView(
+                        airpodsService: $airpodsService,
+                        blinkDetector: $blinkDetector,
+                        onDoodleCompleted: { drawing in
                         //isShowRevealDoodleViewPresented = true
                         finishedDrawing = drawing
                         // ensures full screen comes first

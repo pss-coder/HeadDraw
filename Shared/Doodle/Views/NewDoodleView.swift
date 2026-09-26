@@ -11,13 +11,15 @@ import PencilKit
 
 struct NewDoodleView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var timeRemaining: TimeInterval = 3
+    @State private var timeRemaining: TimeInterval = 15
     @State private var hasFinished = false
+    
+    @Binding var airpodsService: AirpodsMotionService
+    @Binding var blinkDetector: BlinkDetector
     
     @State private var newDrawing: PKDrawing = PKDrawing()
     @State private var drawingPoints: [CGPoint] = []
     
-    @State var cursorPosition: CGPoint = .init(x: 0, y: 0)
     @State var isTouching: Bool = false
     
     let onDoodleCompleted: (DrawingModel) -> Void
@@ -29,17 +31,41 @@ struct NewDoodleView: View {
     var body: some View {
         VStack {
             prompt
-           
-            //TODO: Canvas here
-            CanvasView(
-                drawing: $newDrawing,
-                airpodsDrawingPoints: $drawingPoints,
-                cursorPosition: $cursorPosition,
-                isTouching: $isTouching,
-                onDrawingFinished: nil, // we don't need this
-            )
-            .border(.primary)
-            .padding()
+            
+            // AirpodsBlinkCanvas
+            GeometryReader { proxy in
+                ZStack {
+                    CanvasView(
+                        drawing: newDrawing,
+                    )
+                    .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
+                            // we draw points on to the canvas
+                            // we append only if eyes was closed
+                            //guard detector.wasBothEyesClosed else { return }
+                        let position = CGPoint(x: airpodsService.cursorPosition.x * proxy.size.width,
+                                               y: airpodsService.cursorPosition.y * proxy.size.height)
+                        
+                        // pass the new position of the cursor over to canvas drawing points to draw 
+                        drawingPoints.append(position)
+                        
+                        //canvasView receives the latest drawing and renders it.
+                        newDrawing = makeAirPodsDrawing(
+                            from: drawingPoints
+                        )
+                    }
+                    
+                    Circle()
+                        .fill(.blue)
+                        .frame(width: 12, height: 12)
+                        .position(
+                            x: airpodsService.cursorPosition.x * proxy.size.width,
+                            y: airpodsService.cursorPosition.y * proxy.size.height
+                        )
+                }
+                .border(.primary)
+                .padding()
+            }
+            
                 
             statusInfo
         }
@@ -123,8 +149,46 @@ struct NewDoodleView: View {
         let seconds = max(0, Int(time))
         return String(format: "00:%02d", seconds)
     }
+    
+    private func makeAirPodsDrawing(
+        from points: [CGPoint]
+    ) -> PKDrawing {
+        
+        guard points.count >= 2 else {
+            return PKDrawing()
+        }
+        
+        let strokePoints = points.enumerated().map {
+            PKStrokePoint(
+                location: $0.element,
+                timeOffset: TimeInterval($0.offset) * 0.01,
+                size: CGSize(width: 5, height: 5),
+                opacity: 1,
+                force: 1,
+                azimuth: 0,
+                altitude: .pi / 2
+            )
+        }
+        
+        let path = PKStrokePath(
+            controlPoints: strokePoints,
+            creationDate: Date()
+        )
+        
+        let stroke = PKStroke(
+            ink: PKInk(
+                .pen,
+                color: .black
+            ),
+            path: path
+        )
+        
+        return PKDrawing(
+            strokes: [stroke]
+        )
+    }
 }
 
-#Preview {
-    NewDoodleView(onDoodleCompleted: {drawing in})
-}
+//#Preview {
+//    NewDoodleView(onDoodleCompleted: {drawing in})
+//}
