@@ -39,8 +39,8 @@ struct OnboardingView: View {
         ),
         OnboardingStep(
             symbolName: "eye",
-            title: "Blink to draw",
-            message: "Close your eyes to put the pen down and draw. Open them again to lift the pen and move without drawing."
+            title: "Blink is your switch",
+            message: "Blink to not doodle. Blink again to doodle."
         )
     ]
     
@@ -79,7 +79,6 @@ struct OnboardingView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.orange)
                     .controlSize(.large)
                 }
                 .padding(.horizontal, 40)
@@ -91,7 +90,6 @@ struct OnboardingView: View {
                         .padding(.vertical, 14)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.orange)
                 .padding(.horizontal, 24)
 #endif
                 
@@ -143,12 +141,11 @@ private struct OnboardingPage: View {
             
             ZStack {
                 Circle()
-                    .fill(Color.orange.opacity(0.15))
+                    .fill(.primary.opacity(0.15))
                     .frame(width: 120, height: 120)
                 
                 Image(systemName: step.symbolName)
                     .font(.system(size: 44, weight: .medium))
-                    .foregroundStyle(.orange)
             }
             
             VStack(spacing: 8) {
@@ -178,7 +175,10 @@ private struct PageIndicator: View {
         HStack(spacing: 6) {
             ForEach(0..<pageCount, id: \.self) { index in
                 Capsule()
-                    .fill(index == currentPage ? Color.orange : Color.secondary.opacity(0.3))
+                    .fill(
+                        index == currentPage ? .primary : Color.secondary
+                            .opacity(0.3)
+                    )
                     .frame(width: index == currentPage ? 18 : 6, height: 6)
                     .animation(.easeInOut(duration: 0.2), value: currentPage)
             }

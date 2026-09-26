@@ -27,8 +27,7 @@ struct RevealDoodleView: View {
                         .padding(.bottom, 10)
                 }
                 
-                    // image
-                    // Todo: allow play/pause in future for playback
+                // image
                 RoundedRectangle(cornerRadius: 14)
                     .frame(height: 350)
                 
@@ -36,7 +35,8 @@ struct RevealDoodleView: View {
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
                         Button {
-                                // Share
+                            // Share
+                            onDoodleShare()
                         } label: {
                             Label("Share", systemImage: "square.and.arrow.up")
                         }
@@ -49,7 +49,8 @@ struct RevealDoodleView: View {
                         )
                         
                         Button {
-                                // New Doodle
+                            // New Doodle
+                            onNewDoodle()
                         } label: {
                             Label("New Doodle", systemImage: "plus")
                         }
@@ -63,7 +64,6 @@ struct RevealDoodleView: View {
                     }
                     
                     Button {
-                            // Save
                         //TODO: pass the data
                         onDoodleSave()
                     } label: {

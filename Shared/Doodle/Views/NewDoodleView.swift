@@ -9,22 +9,18 @@ import SwiftUI
 import Combine
 
 struct NewDoodleView: View {
-    let onDoodleCompleted: () -> Void
-    @Environment(\.dismiss) private var dismiss
-
-
+    @Environment(\.dismiss) var dismiss
     @State private var timeRemaining: TimeInterval = 3
     @State private var hasFinished = false
-
-
     
+    let onDoodleCompleted: () -> Void
+
     private let timer = Timer
         .publish(every: 1, on: .main, in: .common)
         .autoconnect()
 
     var body: some View {
         VStack {
-            
             prompt
            
             //TODO: Canvas here
@@ -33,13 +29,15 @@ struct NewDoodleView: View {
                 .padding(.horizontal)
                 .foregroundStyle(.gray)
                 
-            
+            // TODO: Pass the status information
+            // away, doodling, eraser
             statusInfo
         }
         .toolbar(content: {
             ToolbarItem(placement: .destructiveAction) {
                 Button {
-                    //
+                    //TODO: Stop
+                    dismiss()
                 } label: {
                     Image(systemName: "stop.fill")
                 }
@@ -55,14 +53,10 @@ struct NewDoodleView: View {
             }
             if timeRemaining <= 0 {
                 hasFinished = true
-                //TODO: Pass the data
-                // Instead: show a modal, for user to view, and save,
-                // otherwise dismiss
-                //onDoodleFinished()
+                //TODO: Pass the data data
                 onDoodleCompleted()
             }
         }
-        
     }
     
     private var statusInfo: some View {
@@ -73,8 +67,6 @@ struct NewDoodleView: View {
                 Image(systemName: "eye")
             }
             Spacer()
-                // timer text with circular progress
-            
             HStack {
                 Text(formatTime(timeRemaining))
                     .font(.system(.subheadline, design: .monospaced))
@@ -100,7 +92,6 @@ struct NewDoodleView: View {
         )
         .padding(.horizontal) // Spacing outside the card from screen edges
     }
-    
     
     private func formatTime(_ time: TimeInterval) -> String {
         let seconds = max(0, Int(time))

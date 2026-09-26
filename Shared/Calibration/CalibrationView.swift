@@ -128,7 +128,7 @@ struct CalibrationView: View {
     }
 }
 
-    // MARK: - Step 1: Connect AirPods
+// MARK: - Step 1: Connect AirPods
 
 private struct ConnectAirPodsStep: View {
     let isConnected: Bool
@@ -165,7 +165,7 @@ private struct ConnectAirPodsStep: View {
     }
 }
 
-    // MARK: - Step 2: Center head
+// MARK: - Step 2: Center head
 
 private struct CenterHeadStep: View {
     let isCentered: Bool
@@ -204,7 +204,7 @@ private struct CenterHeadStep: View {
     }
 }
 
-    // MARK: - Step 3: Test blink
+// MARK: - Step 3: Test blink
 
 private struct TestBlinkStep: View {
     let detectedCount: Int
@@ -249,7 +249,7 @@ private struct TestBlinkStep: View {
     }
 }
 
-    // MARK: - Step 4: Ready
+// MARK: - Step 4: Ready
 
 //private struct ReadyStep: View {
 //    @Binding var sensitivity: Double

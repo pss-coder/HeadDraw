@@ -16,7 +16,6 @@ struct HeadDrawRootView: View {
             HomeView()
         } else {
             OnboardingView {
-                //TODO:
                 hasCompletedOnboarding = true
             }
         }
