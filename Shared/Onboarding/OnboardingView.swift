@@ -32,7 +32,7 @@ struct OnboardingView: View {
         OnboardingStep(
             symbolName: "airpods.gen3",
             title: "Put on your AirPods",
-            message: "Their motion sensors steer your pencil. Your dignity is optional.",
+            message: "Their motion sensors steer your pencil.",
             showsSupportedModels: true
         ),
         OnboardingStep(
