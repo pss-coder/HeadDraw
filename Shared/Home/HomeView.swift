@@ -11,17 +11,24 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    
     @State private var viewModel = HomeViewModel()
+    
+    @Query(sort: \DrawingModel.createdAt, order: .reverse)
+    private var drawings: [DrawingModel]
     
     var body: some View {
         @Bindable var viewModel = viewModel
 
         NavigationStack(path: $viewModel.path) {
             VStack {
-                playButton
-                gallery
-                Spacer()
-                
+                if drawings.isEmpty {
+                    emptyState
+                } else {
+                    playButton
+                    gallery
+                    Spacer()
+                }
             }
             .navigationTitle("HeadDraw")
             .navigationSubtitle("Tilt to draw. Blink to ink. Laugh at the results.")
@@ -56,7 +63,6 @@ struct HomeView: View {
                         .sketchyPaper()
                 }
             }
-            .sketchyPaper()
         }
         .fullScreenCover(item: $viewModel.finishedDrawing) { drawing in
             RevealDoodleView(
@@ -114,6 +120,36 @@ struct HomeView: View {
             GalleryView(limit: 6)
         }
         .padding(SketchyTheme.Spacing.medium)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: SketchyTheme.Spacing.medium) {
+            Image(systemName: "scribble.variable")
+                .font(.system(size: 34, weight: .medium))
+                .foregroundStyle(SketchyTheme.Color.coral)
+                .frame(width: 72, height: 72)
+                .sketchyBorder(
+                    color: SketchyTheme.Color.ink(for: colorScheme).opacity(0.8),
+                    fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                )
+
+            VStack(spacing: SketchyTheme.Spacing.xSmall) {
+                Text("No drawings yet")
+                    .font(SketchyTheme.Font.heading(23))
+                Text("Start your first HeadDrawing to fill your gallery.")
+                    .font(SketchyTheme.Font.body())
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme).opacity(0.75))
+            }
+
+            Button(action: viewModel.startDoodle) {
+                Label("Start Drawing", systemImage: "scribble.variable")
+            }
+            .buttonStyle(SketchyButtonStyle())
+            .frame(maxWidth: 260)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, SketchyTheme.Spacing.large)
     }
     
 }
