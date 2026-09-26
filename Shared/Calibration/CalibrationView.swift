@@ -27,6 +27,7 @@ enum CalibrationStep: Int, CaseIterable, Equatable {
 
 struct CalibrationView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @Binding var airpodsService: AirpodsMotionService
     @Binding var blinkDetector: BlinkDetector
 
@@ -38,8 +39,25 @@ struct CalibrationView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            StepProgressDots(current: step)
-                .padding(.top, 24)
+            ZStack {
+                StepProgressDots(current: step)
+
+                HStack {
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .frame(width: 40, height: 40)
+                            .background(SketchyTheme.Color.paperShade(for: colorScheme), in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Close calibration")
+                }
+                .padding(.horizontal, 24)
+            }
+            .padding(.top, 24)
 
             Spacer(minLength: 0)
 
