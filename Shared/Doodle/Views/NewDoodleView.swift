@@ -32,16 +32,17 @@ struct NewDoodleView: View {
         VStack {
             prompt
             
-            // AirpodsBlinkCanvas
+            // AirpodsCanvas
             GeometryReader { proxy in
                 ZStack {
                     CanvasView(
                         drawing: newDrawing,
                     )
                     .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
-                            // we draw points on to the canvas
-                            // we append only if eyes was closed
-                            //guard detector.wasBothEyesClosed else { return }
+                        // we draw points on to the canvas
+                        // we append only if eyes was closed
+                        guard blinkDetector.wasBothEyesClosed else { return }
+                        
                         let position = CGPoint(x: airpodsService.cursorPosition.x * proxy.size.width,
                                                y: airpodsService.cursorPosition.y * proxy.size.height)
                         
@@ -65,10 +66,12 @@ struct NewDoodleView: View {
                 .border(.primary)
                 .padding()
             }
-            
-                
             statusInfo
         }
+        .onDisappear(perform: {
+            blinkDetector.stop()
+            airpodsService.stopDeviceMotionUpdates()
+        })
         .toolbar(content: {
             ToolbarItem(placement: .destructiveAction) {
                 Button {
