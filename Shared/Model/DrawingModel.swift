@@ -28,3 +28,13 @@ final class DrawingModel{
         self.thumbnailData = thumbnailData
     }
 }
+
+extension DrawingModel {
+    var pkDrawing: PKDrawing? {
+        try? PKDrawing(data: drawingData)
+    }
+    
+    var thumbnailImage: UIImage? {
+        UIImage(data: thumbnailData)
+    }
+}
