@@ -111,19 +111,22 @@ final class AirpodsMotionService: NSObject {
     
     override init() {
         super.init()
-        headphoneMotionManager.delegate = self
-        headphoneMotionManager.startConnectionStatusUpdates()
+        startGettingConnectionStatus()
     }
     
     deinit {
         headphoneMotionManager.stopDeviceMotionUpdates()
     }
     
+    func startGettingConnectionStatus() {
+        headphoneMotionManager.delegate = self
+        headphoneMotionManager.startConnectionStatusUpdates()
+    }
     
         // MARK: - Motion
     
     func startDeviceMotionUpdates() {
-        
+        print("startDeviceMotionUpdates called")
         guard headphoneMotionManager.isDeviceMotionAvailable else {
             print("❌ Device motion unavailable")
             return
