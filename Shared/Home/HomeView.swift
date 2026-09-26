@@ -101,7 +101,7 @@ struct HomeView: View {
     var gallery: some View {
         VStack {
             HStack {
-                Text("Recent Doodles")
+                Text("Recent HeadDrawings")
                     .font(SketchyTheme.Font.heading(22))
                 Spacer()
                 NavigationLink(value: AppRoute.gallery) {
