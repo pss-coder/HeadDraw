@@ -28,9 +28,9 @@ final class AirpodsMotionService: NSObject {
     
         // Static list of models supporting dynamic head tracking
     static let supportedModels = [
-        "AirPods Pro (1st & 2nd Gen)",
+        "AirPods Pro",
         "AirPods Max",
-        "AirPods (3rd & 4th Gen)",
+        "AirPods (3rd Gen and later)",
         "Beats Fit Pro",
         "Beats Studio Pro"
     ]
