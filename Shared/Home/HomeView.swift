@@ -21,15 +21,21 @@ struct HomeView: View {
         @Bindable var viewModel = viewModel
         
         NavigationStack(path: $viewModel.path) {
-            VStack {
-                if drawings.isEmpty {
-                    emptyState
-                } else {
-                    playButton
-                    gallery
-                    Spacer()
+            ZStack(content: {
+                
+                SketchyTheme.Color.paper(for: colorScheme)
+                    .ignoresSafeArea()
+                
+                VStack {
+                    if drawings.isEmpty {
+                        emptyState
+                    } else {
+                        playButton
+                        gallery
+                        Spacer()
+                    }
                 }
-            }
+            })
             .navigationTitle("HeadDraw")
             .navigationSubtitle("Tilt to draw. Blink to ink. Laugh at the results.")
             .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
@@ -116,14 +122,7 @@ struct HomeView: View {
 
     private var emptyState: some View {
         VStack(spacing: SketchyTheme.Spacing.medium) {
-            Image(systemName: "scribble.variable")
-                .font(.system(size: 34, weight: .medium))
-                .foregroundStyle(SketchyTheme.Color.coral)
-                .frame(width: 72, height: 72)
-                .sketchyBorder(
-                    color: SketchyTheme.Color.ink(for: colorScheme).opacity(0.8),
-                    fill: SketchyTheme.Color.paperShade(for: colorScheme)
-                )
+            AppIconView()
 
             VStack(spacing: SketchyTheme.Spacing.xSmall) {
                 Text("No drawings yet")
