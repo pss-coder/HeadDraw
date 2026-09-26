@@ -198,9 +198,11 @@ private struct CenterHeadStep: View {
                 Button {
                     onCalibrate()
                 } label: {
-                    Text("Find my center")
+                    Text("Tap to center manually")
                 }
                 .buttonStyle(SketchyButtonStyle(tone: .paper))
+                .disabled(isCentered)
+                .padding()
             }
         }
     }
