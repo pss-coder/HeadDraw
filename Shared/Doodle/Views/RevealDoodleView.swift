@@ -48,7 +48,7 @@ struct RevealDoodleView: View {
                             let imageUrl = shareImageRenderer()
                             ShareLink(
                                 item: imageUrl,
-                                preview: SharePreview("My HeadDraw doodle")
+                                preview: SharePreview("My HeadDrawing")
                             ) {
                                 Label("Share", systemImage: "square.and.arrow.up")
                             }
@@ -96,7 +96,7 @@ struct RevealDoodleView: View {
     
     func shareImageRenderer() -> URL {
         let renderer = ImageRenderer(content: Image(uiImage: drawing.thumbnailImage!))
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("doodle.png")
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("HeadDraw.png")
         
         if let data = renderer.uiImage?.pngData() {
             try? data.write(to: tempURL)

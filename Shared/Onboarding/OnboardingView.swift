@@ -40,8 +40,8 @@ struct OnboardingView: View {
         ),
         OnboardingStep(
             symbolName: "eye",
-            title: "Blink to ink",
-            message: "Close both eyes to lower the pen; open them to lift it. Try not to nap."
+            title: "Blink and lose ink",
+            message: "Open both eyes to have pen draw. open them to lift it. Try not to nap."
         )
     ]
     

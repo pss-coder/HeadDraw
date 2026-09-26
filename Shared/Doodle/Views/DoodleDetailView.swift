@@ -16,7 +16,7 @@ struct DoodleDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                Text("Your doodle")
+                Text("Your Drawing")
                     .font(SketchyTheme.Font.heading(28))
 
                 if let image = drawing.thumbnailImage {

@@ -133,7 +133,7 @@ struct CalibrationView: View {
                 .frame(maxWidth: .infinity)
                 .disabled(!airpodsService.isCentered)
         case .testBlink:
-            Button("Let's doodle") { onComplete() }
+            Button("Let's Draw") { onComplete() }
                 .buttonStyle(SketchyButtonStyle())
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)

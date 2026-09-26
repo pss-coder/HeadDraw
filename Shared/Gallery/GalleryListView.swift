@@ -16,7 +16,8 @@ struct GalleryListView: View {
                 .padding(SketchyTheme.Spacing.medium)
         }
         .sketchyPaper()
-        .navigationTitle("Doodle gallery")
+        .navigationTitle("Gallery")
+        .navigationSubtitle("Your HeadDrawings")
         .navigationBarTitleDisplayMode(.large)
         .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
     }

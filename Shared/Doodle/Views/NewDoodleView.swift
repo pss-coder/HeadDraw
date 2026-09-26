@@ -12,6 +12,7 @@ import PencilKit
 struct NewDoodleView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    
     @State private var timeRemaining: TimeInterval = 15
     @State private var hasFinished = false
     @State private var isPaused = false
@@ -108,9 +109,8 @@ struct NewDoodleView: View {
         .toolbar(content: {
             ToolbarItem(placement: .destructiveAction) {
                 Button {
+                    finishCurrentStroke()
                     isPaused = true
-                    drawingPoints.removeAll()
-                    newDrawing = PKDrawing(strokes: airPodsStrokes)
                     isPauseDialogPresented = true
                 } label: {
                     Image(systemName: "pause.fill")
@@ -118,7 +118,7 @@ struct NewDoodleView: View {
             }
         })
         .confirmationDialog(
-            "Doodle paused",
+            "Drawing paused",
             isPresented: $isPauseDialogPresented,
             titleVisibility: .visible
         ) {
@@ -188,7 +188,7 @@ struct NewDoodleView: View {
     
     private var prompt: some View {
         VStack {
-            Text("Doodle dare: a cat")
+            Text("Draw dare: a cat")
                 .font(SketchyTheme.Font.heading(21))
             Text("Aim for cat-ish.")
                 .font(SketchyTheme.Font.body(14))
