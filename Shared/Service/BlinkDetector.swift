@@ -10,13 +10,14 @@ import AVFoundation
 import Vision
 import Observation
 
-@MainActor
 @Observable
 class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         // UI-Observable states
     var isLeftEyeClosed = false
     var isRightEyeClosed = false
     var blinkCount = 0
+    var didBlink = false
+    
     var errorMessage: String? = nil
     
     var isEyesOpen: Bool = true // default eye is open
@@ -115,16 +116,29 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         let leftClosed = leftEAR < blinkThreshold
         let rightClosed = rightEAR < blinkThreshold
         
-            // Safely push back updates onto the MainActor for UI reactivity
+        // Safely push back updates onto the MainActor for UI reactivity
         Task { @MainActor in
             self.isLeftEyeClosed = leftClosed
             self.isRightEyeClosed = rightClosed
             
-            // Simple edge-triggered counter logic for an explicit dual-blink
             let bothClosed = leftClosed && rightClosed
-            if bothClosed && !wasBothEyesClosed {
+            
+                // Eyes just closed
+            if bothClosed && !self.wasBothEyesClosed {
                 self.blinkCount += 1
             }
+            
+                // Eyes just opened after being closed = blink completed
+            if !bothClosed && self.wasBothEyesClosed {
+                self.didBlink = true
+                
+                // Reset on the next run-loop tick
+                Task { @MainActor in
+                    await Task.yield()
+                    self.didBlink = false
+                }
+            }
+            
             self.wasBothEyesClosed = bothClosed
         }
     }
