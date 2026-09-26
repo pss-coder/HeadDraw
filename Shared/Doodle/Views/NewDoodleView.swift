@@ -105,9 +105,6 @@ struct NewDoodleView: View {
         .onDisappear(perform: {
             blinkDetector.stop()
             airpodsService.stopDeviceMotionUpdates()
-            // reset 
-            blinkDetector = BlinkDetector()
-            airpodsService = AirpodsMotionService()
         })
         .toolbar(content: {
             ToolbarItem(placement: .destructiveAction) {
