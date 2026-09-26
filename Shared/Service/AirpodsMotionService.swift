@@ -487,12 +487,8 @@ extension AirpodsMotionService: CMHeadphoneMotionManagerDelegate {
     func headphoneMotionManagerDidConnect(
         _ manager: CMHeadphoneMotionManager
     ) {
-        
-        print("🎧 CMHeadphoneMotionManager connected and start motion update")
-        
+        print("🎧 CMHeadphoneMotionManager connected")
         isHeadphoneConnected = true
-        
-        //startDeviceMotionUpdates()
     }
     
     func headphoneMotionManagerDidDisconnect(
