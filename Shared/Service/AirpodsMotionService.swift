@@ -111,10 +111,8 @@ final class AirpodsMotionService: NSObject {
     
     override init() {
         super.init()
-        headphoneMotionManager.startConnectionStatusUpdates()
         headphoneMotionManager.delegate = self
-        
-        isHeadphoneConnected = headphoneMotionManager.isConnectionStatusActive
+        headphoneMotionManager.startConnectionStatusUpdates()
     }
     
     deinit {

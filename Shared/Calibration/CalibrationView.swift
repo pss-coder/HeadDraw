@@ -254,11 +254,11 @@ private struct ConnectAirPodsStep: View {
             }
 
             VStack(spacing: 8) {
-                Text(isConnected ? "AirPods connected" : "Looking for AirPods…")
+                 Text(isConnected ? "Headphone motion detected" : "Looking for motion-capable headphones…")
                     .font(SketchyTheme.Font.heading(22))
                 Text(isConnected
-                     ? "Their motion sensors are steering your pencil."
-                     : "Pop them in and connect them to this device.")
+                     ? "Motion sensors are available for head tracking."
+                     : "Connect supported AirPods to this device.")
                     .font(SketchyTheme.Font.body(16))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
