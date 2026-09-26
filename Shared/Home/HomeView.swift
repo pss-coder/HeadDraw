@@ -4,15 +4,19 @@
 //
 //  Created by Pawandeep Sekhon on 25/9/26.
 //
-
 import SwiftUI
+import PencilKit
 
 struct HomeView: View {
     @State private var path: [AppRoute] = []
     
-    @State private var isShowRevealDoodleViewPresented : Bool = false
+    //@State private var isShowRevealDoodleViewPresented : Bool = false
     @State private var isCalibrationViewPresented: Bool = false
     
+    @State private var airpodsService = AirpodsMotionService()
+    @State private var blinkDetector = BlinkDetector()
+    
+    @State private var finishedDrawing: DrawingModel?
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -32,8 +36,9 @@ struct HomeView: View {
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .new_doodle:
-                    NewDoodleView(onDoodleCompleted: {
-                        isShowRevealDoodleViewPresented = true
+                    NewDoodleView(onDoodleCompleted: { drawing in
+                        //isShowRevealDoodleViewPresented = true
+                        finishedDrawing = drawing
                         // ensures full screen comes first
                         Task { @MainActor in
                             await Task.yield()
@@ -50,18 +55,28 @@ struct HomeView: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $isShowRevealDoodleViewPresented) {
-            RevealDoodleView(onDoodleShare: {
-                    //TODO: When user taps on share
-            }, onNewDoodle: {
-                    //TODO: When user wants a new doodle
-                    // show alert, whether to save this one, else just new doodle
-                isShowRevealDoodleViewPresented = false
-                isCalibrationViewPresented = true
-            }, onDoodleSave: {
-                isShowRevealDoodleViewPresented = false
-                //TODO: Pass data to save
-            })
+        .fullScreenCover(item: $finishedDrawing) { drawing in
+//            RevealDoodleView(drawing: drawing ) onDoodleShare: { drawing in
+//                    //TODO: When user taps on share
+//            }, onNewDoodle: { drawing in
+//                    //TODO: When user wants a new doodle
+//                    // show alert, whether to save this one, else just new doodle
+//                finishedDrawing = nil
+//                isCalibrationViewPresented = true
+//            }, onDoodleSave: { drawing in
+//                finishedDrawing = nil
+//                //TODO: Pass data to save
+//            })
+            RevealDoodleView(
+                drawing: drawing) { drawing in
+                    // share drawing
+                } onNewDoodle: { drawing in
+                    finishedDrawing = nil
+                    isCalibrationViewPresented = true
+                } onDoodleSave: { drawing in
+                    finishedDrawing = nil
+                }
+
         }
         .fullScreenCover(isPresented: $isCalibrationViewPresented) {
             CalibrationView {

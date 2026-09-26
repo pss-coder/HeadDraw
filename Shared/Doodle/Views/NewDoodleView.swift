@@ -7,13 +7,20 @@
 
 import SwiftUI
 import Combine
+import PencilKit
 
 struct NewDoodleView: View {
     @Environment(\.dismiss) var dismiss
     @State private var timeRemaining: TimeInterval = 3
     @State private var hasFinished = false
     
-    let onDoodleCompleted: () -> Void
+    @State private var newDrawing: PKDrawing = PKDrawing()
+    @State private var drawingPoints: [CGPoint] = []
+    
+    @State var cursorPosition: CGPoint = .init(x: 0, y: 0)
+    @State var isTouching: Bool = false
+    
+    let onDoodleCompleted: (DrawingModel) -> Void
 
     private let timer = Timer
         .publish(every: 1, on: .main, in: .common)
@@ -24,13 +31,16 @@ struct NewDoodleView: View {
             prompt
            
             //TODO: Canvas here
-            RoundedRectangle(cornerRadius: 14)
-                .foregroundStyle(.blue)
-                .padding(.horizontal)
-                .foregroundStyle(.gray)
+            CanvasView(
+                drawing: $newDrawing,
+                airpodsDrawingPoints: $drawingPoints,
+                cursorPosition: $cursorPosition,
+                isTouching: $isTouching,
+                onDrawingFinished: nil, // we don't need this
+            )
+            .border(.primary)
+            .padding()
                 
-            // TODO: Pass the status information
-            // away, doodling, eraser
             statusInfo
         }
         .toolbar(content: {
@@ -54,7 +64,23 @@ struct NewDoodleView: View {
             if timeRemaining <= 0 {
                 hasFinished = true
                 //TODO: Pass the data data
-                onDoodleCompleted()
+                let data = newDrawing.dataRepresentation()
+                
+                let thumbnail = newDrawing.image(
+                    from: newDrawing.bounds,
+                    scale: 1
+                )
+                
+                guard let thumbnailData = thumbnail.pngData() else {
+                    return
+                }
+                
+                let drawingModel = DrawingModel(
+                    drawingData: data,
+                    thumbnailData: thumbnailData
+                )
+                
+                onDoodleCompleted(drawingModel)
             }
         }
     }
@@ -100,5 +126,5 @@ struct NewDoodleView: View {
 }
 
 #Preview {
-    NewDoodleView(onDoodleCompleted: {})
+    NewDoodleView(onDoodleCompleted: {drawing in})
 }

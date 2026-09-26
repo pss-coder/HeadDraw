@@ -18,10 +18,10 @@ final class PKTrackingCanvasView: PKCanvasView {
     ) {
         super.touchesBegan(touches, with: event)
         
-        guard let touch = touches.first else { return }
+        //guard let touch = touches.first else { return }
         
-        let location = touch.location(in: self)
-        onTouchBegan?(location)
+//        let location = touch.location(in: self)
+//        onTouchBegan?(location)
     }
     
     override func touchesMoved(
@@ -30,10 +30,9 @@ final class PKTrackingCanvasView: PKCanvasView {
     ) {
         super.touchesMoved(touches, with: event)
         
-        guard let touch = touches.first else { return }
-        
-        let location = touch.location(in: self)
-        onTouchMoved?(location)
+        //guard let touch = touches.first else { return }
+//        let location = touch.location(in: self)
+//        onTouchMoved?(location)
     }
     
     override func touchesEnded(

@@ -16,7 +16,7 @@ struct CanvasView: UIViewRepresentable {
     @Binding var cursorPosition: CGPoint
     @Binding var isTouching: Bool // to denote if pencil can be drawn
     
-    let onDrawingFinished: (PKDrawing) -> Void
+    let onDrawingFinished: ((PKDrawing) -> Void)?
     
     func makeUIView(context: Context) -> PKTrackingCanvasView {
         let canvasView = PKTrackingCanvasView()
@@ -87,7 +87,7 @@ struct CanvasView: UIViewRepresentable {
         debugPrint("cleanig up")
         if (!uiView.drawing.isEmpty) {
                 // send over
-            coordinator.onDrawingFinished(uiView.drawing)
+            coordinator.onDrawingFinished?(uiView.drawing)
         }
         // clear the drawing
         uiView.drawing = PKDrawing()
@@ -158,16 +158,19 @@ extension CanvasView {
 extension CanvasView {
     class Coordinator: NSObject, PKCanvasViewDelegate {
         var drawing: Binding<PKDrawing>
-        let onDrawingFinished: (PKDrawing) -> Void
+        let onDrawingFinished: ((PKDrawing) -> Void)?
         
-        init(drawing: Binding<PKDrawing>, onDrawingFinished: @escaping (PKDrawing) -> Void) {
+        init(
+            drawing: Binding<PKDrawing>,
+            onDrawingFinished: ((PKDrawing) -> Void)?
+        ) {
             self.drawing = drawing
             self.onDrawingFinished = onDrawingFinished
         }
         
-        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            self.drawing.wrappedValue = canvasView.drawing
-        }
+//        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+//            self.drawing.wrappedValue = canvasView.drawing
+//        }
     }
 }
 

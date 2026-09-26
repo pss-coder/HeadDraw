@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct RevealDoodleView: View {
+    let drawing: DrawingModel
+    
     // share handler
-    let onDoodleShare: () -> Void
+    let onDoodleShare: (DrawingModel) -> Void
     // new doodle <- basically clear everything, and restart again
-    let onNewDoodle: () -> Void
+    let onNewDoodle: (DrawingModel) -> Void
     // save doodle
-    let onDoodleSave: () -> Void
+    let onDoodleSave: (DrawingModel) -> Void
     
     var body: some View {
         ZStack {
@@ -28,15 +30,20 @@ struct RevealDoodleView: View {
                 }
                 
                 // image
-                RoundedRectangle(cornerRadius: 14)
-                    .frame(height: 350)
-                
+                if let image = UIImage(data: drawing.thumbnailData) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 350)
+                        .border(.primary)
+                }
                     // Button
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
                         Button {
                             // Share
-                            onDoodleShare()
+                            onDoodleShare(drawing)
                         } label: {
                             Label("Share", systemImage: "square.and.arrow.up")
                         }
@@ -50,7 +57,7 @@ struct RevealDoodleView: View {
                         
                         Button {
                             // New Doodle
-                            onNewDoodle()
+                            onNewDoodle(drawing)
                         } label: {
                             Label("New Doodle", systemImage: "plus")
                         }
@@ -65,7 +72,7 @@ struct RevealDoodleView: View {
                     
                     Button {
                         //TODO: pass the data
-                        onDoodleSave()
+                        onDoodleSave(drawing)
                     } label: {
                         Label("Save", systemImage: "checkmark")
                     }
@@ -90,11 +97,13 @@ struct RevealDoodleView: View {
 }
 
 #Preview {
-    RevealDoodleView {
+    RevealDoodleView(
+        drawing: DrawingModel(drawingData: .init(), thumbnailData: .init())
+    ) { _ in
         //
-    } onNewDoodle: {
+    } onNewDoodle: { _ in
         //
-    } onDoodleSave: {
+    } onDoodleSave: { _ in
         //
     }
 
