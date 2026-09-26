@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import PencilKit
+import UIKit
 
 struct NewDoodleView: View {
     @Environment(\.dismiss) var dismiss
@@ -45,8 +46,6 @@ struct NewDoodleView: View {
                     CanvasView(
                         drawing: newDrawing,
                     )
-                    .colorInvert()
-                    .colorMultiply(SketchyTheme.Color.teal)
                     .shadow(color: SketchyTheme.Color.teal.opacity(0.42), radius: 5)
                     .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
                         guard !isPaused, areBothEyesOpen else { return }
@@ -255,7 +254,7 @@ struct NewDoodleView: View {
         return PKStroke(
             ink: PKInk(
                 .pen,
-                color: .black
+                color: UIColor(SketchyTheme.Color.teal)
             ),
             path: path
         )
