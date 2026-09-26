@@ -85,6 +85,12 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
                 self.session.stopRunning()
             }
         }
+        // reset blink count
+        isLeftEyeClosed = false
+        isRightEyeClosed = false
+        blinkCount = 0
+        didBlink = false
+        isEyesOpen = true
     }
     
         // Camera frame delegate processing loop

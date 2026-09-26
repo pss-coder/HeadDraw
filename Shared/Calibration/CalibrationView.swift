@@ -56,6 +56,10 @@ struct CalibrationView: View {
                         cursorPosition: airpodsService.centeringPosition,
                         onCalibrate: airpodsService.beginManualCalibration
                     )
+                    .onAppear {
+                        airpodsService.beginManualCalibration()
+                        SketchyFeedback.lightHaptic()
+                    }
                 case .testBlink:
                     TestBlinkStep(
                         detectedCount: blinkDetector.blinkCount,
@@ -88,13 +92,6 @@ struct CalibrationView: View {
         .onChange(of: airpodsService.isCentered) { _, isCentered in
             if isCentered {
                 SketchyFeedback.successHaptic()
-            }
-        }
-        .onChange(of: step) { _, newStep in
-            if newStep == .centerHead {
-                print("centering")
-                airpodsService.beginManualCalibration()
-                SketchyFeedback.lightHaptic()
             }
         }
     }
@@ -172,6 +169,7 @@ private struct CenterHeadStep: View {
     let onCalibrate: () -> Void
 
     private let targetRadius: CGFloat = 28
+    @State private var cursorWasOutsideTarget = false
 
     var body: some View {
         VStack(spacing: 24) {
@@ -205,6 +203,18 @@ private struct CenterHeadStep: View {
                             y: cursorPosition.y * proxy.size.height
                         )
                         .animation(.easeOut(duration: 0.08), value: cursorPosition)
+                        .onChange(of: cursorPosition) { _, position in
+                            let deltaX = (position.x - 0.5) * proxy.size.width
+                            let deltaY = (position.y - 0.5) * proxy.size.height
+                            let entryRadius = targetRadius - 5
+                            let isOutsideTarget = hypot(deltaX, deltaY) > entryRadius
+
+                            if cursorWasOutsideTarget && !isOutsideTarget && !isCentered {
+                                SketchyFeedback.lightHaptic()
+                            }
+
+                            cursorWasOutsideTarget = isOutsideTarget
+                        }
                 }
             }
             .frame(width: 150, height: 150)
