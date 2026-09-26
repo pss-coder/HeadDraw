@@ -68,11 +68,11 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     func start() {
         sessionQueue.async { [weak self] in
-            guard let self = self else { return }
-            Task { @MainActor in
-                guard !self.session.isRunning else { return }
-                self.session.startRunning()
-            }
+            guard let self else { return }
+            
+            guard !self.session.isRunning else { return }
+            
+            self.session.startRunning()
         }
     }
     
