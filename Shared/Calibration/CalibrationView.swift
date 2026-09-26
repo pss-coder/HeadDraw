@@ -18,6 +18,7 @@
 //  change shape when you do.
 //
 import SwiftUI
+import AVFoundation
 
 enum CalibrationStep: Int, CaseIterable, Equatable {
     case connectAirPods
@@ -88,11 +89,12 @@ struct CalibrationView: View {
                 case .testBlink:
                     TestBlinkStep(
                         detectedCount: blinkDetector.blinkCount,
-                        requiredCount: requiredBlinkCount
-                    )
-                        .onAppear {
+                        requiredCount: requiredBlinkCount,
+                        cameraSession: blinkDetector.session,
+                        onCameraStart: {
                             blinkDetector.start()
                         }
+                    )
                 }
             }
             .transition(.opacity.combined(with: .scale(scale: 0.98)))
@@ -257,6 +259,7 @@ private struct CenterHeadStep: View {
             VStack(spacing: 8) {
                 Text(isCentered ? "Baseline captured" : "Center your head and tap start below")
                     .font(SketchyTheme.Font.heading(22))
+                    .padding()
 
                 Text(isCentered
                      ? "You're ready to draw."
@@ -284,10 +287,12 @@ private struct CenterHeadStep: View {
 
 private struct TestBlinkStep: View {
     @Environment(\.colorScheme) private var colorScheme
-
+    @State private var hasStarted = false
+    
     let detectedCount: Int
     let requiredCount: Int
-
+    var cameraSession: AVCaptureSession
+    let onCameraStart: () -> Void
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
@@ -295,36 +300,68 @@ private struct TestBlinkStep: View {
                     .fill(SketchyTheme.Color.ink(for: colorScheme))
                     .overlay {
                         SketchyBorder()
-                            .stroke(SketchyTheme.Color.ink(for: colorScheme), lineWidth: 2)
+                            .stroke(
+                                SketchyTheme.Color.ink(for: colorScheme),
+                                lineWidth: 2
+                            )
                     }
                     .frame(width: 140, height: 140)
-                Image(systemName: "eye")
-                    .font(.system(size: 44, design: .rounded))
-                    .foregroundStyle(SketchyTheme.Color.mustard)
-            }
-
-            VStack(spacing: 8) {
-                Text("Blink three times")
-                    .font(SketchyTheme.Font.heading(22))
-                Text("We're checking your blink signal. No need to make it theatrical.")
-                    .font(SketchyTheme.Font.body(16))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-            }
-
-            HStack(spacing: 10) {
-                ForEach(0..<requiredCount, id: \.self) { index in
-                    ZStack {
-                        Circle()
-                            .fill(index < detectedCount ? SketchyTheme.Color.teal : SketchyTheme.Color.paperShade(for: colorScheme))
-                        if index < detectedCount {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundStyle(.white)
-                        }
+                if hasStarted {
+                    CameraPreviewView(session: cameraSession)
+                        .frame(width: 140, height: 140)
+                        .clipShape(SketchyBorder())
+                } else {
+                    Button {
+                        hasStarted = true
+                        onCameraStart()
+                    } label: {
+                        Image(systemName: "eye")
+                            .font(.system(size: 44, design: .rounded))
+                            .foregroundStyle(
+                                SketchyTheme.Color.mustard
+                            )
                     }
-                    .frame(width: 36, height: 36)
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(width: 140, height: 140)
+            VStack(spacing: 8) {
+                Text(hasStarted ? "Blink three times" : "Tap the eye to begin")
+                    .font(SketchyTheme.Font.heading(22))
+                Text(
+                    hasStarted
+                    ? "We're checking your blink signal. No need to make it theatrical."
+                    : "Tap the eye above when you're ready. We'll use your camera to check your blink signal."
+                )
+                .font(SketchyTheme.Font.body(16))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+            }
+            if hasStarted {
+                HStack(spacing: 10) {
+                    ForEach(0..<requiredCount, id: \.self) { index in
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    index < detectedCount
+                                    ? SketchyTheme.Color.teal
+                                    : SketchyTheme.Color.paperShade(for: colorScheme)
+                                )
+                            if index < detectedCount {
+                                Image(systemName: "checkmark")
+                                    .font(
+                                        .system(
+                                            size: 14,
+                                            weight: .bold,
+                                            design: .rounded
+                                        )
+                                    )
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                        .frame(width: 36, height: 36)
+                    }
                 }
             }
         }
