@@ -45,6 +45,63 @@ struct NewDoodleView: View {
     private let timer = Timer
         .publish(every: 1, on: .main, in: .common)
         .autoconnect()
+    
+    let drawingPrompts: [String] = [
+        "Heart",
+        "Sun",
+        "Cloud",
+        "Moon",
+        "Star",
+        "Balloon",
+        "Flower",
+        "Fish",
+        "House",
+        "Rocket",
+        "Apple",
+        "Banana",
+        "Ice Cream",
+        "Tree",
+        "Snail",
+        "Cup",
+        "Gift",
+        "Cake",
+        "Pizza",
+        "Mushroom",
+        "Cactus",
+        "Car",
+        "Bicycle",
+        "Airplane",
+        "Boat",
+        "Bird",
+        "Cat",
+        "Dog",
+        "Bunny",
+        "Crown",
+        "Glasses",
+        "Guitar",
+        "Headphones",
+        "Camera",
+        "Watch",
+        "Key",
+        "Lock",
+        "Umbrella",
+        "Candle",
+        "Rainbow",
+        "Mountain",
+        "Wave",
+        "Castle",
+        "Ghost",
+        "Monster",
+        "Robot",
+        "UFO",
+        "Dinosaur",
+        "Alien",
+        "Mustache"
+    ]
+    
+    var randomPrompt: String {
+        drawingPrompts.randomElement()!
+    }
 
     var body: some View {
         VStack {
@@ -186,9 +243,9 @@ struct NewDoodleView: View {
     
     private var prompt: some View {
         VStack {
-            Text(drawingMode == .game ? "Draw dare: a cat" : "Free drawing")
+            Text(drawingMode == .game ? "Draw a \(randomPrompt)" : "Free drawing")
                 .font(SketchyTheme.Font.heading(21))
-            Text(drawingMode == .game ? "Aim for cat-ish." : "Double-tap the canvas when you're finished.")
+            Text(drawingMode == .game ? "Aim for \(randomPrompt)-ish." : "Double-tap the canvas when you're finished.")
                 .font(SketchyTheme.Font.body(14))
                 .foregroundStyle(.secondary)
         }
