@@ -12,11 +12,11 @@ HeadDraw is a playful, hands-free drawing app for iPhone, iPad, and Mac. Steer t
 
 ---
 
-## Screenshots & Demo
-Quick Video done up by Remotion
-<video src="screenshots/head-draw-app-store-promo.mp4" width="600" controls>
-  Your browser does not support the video tag.
-</video>
+## Screenshots
+
+![Screenshot](screenshots/HeadDraw_DrawingScreen.png)
+
+More can be found in screenshot folder
 ---
 
 ## Features
