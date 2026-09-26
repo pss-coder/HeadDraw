@@ -10,19 +10,12 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
-
-    @State private var path: [AppRoute] = []
-    
-    //TODO: Pass as a View Model
-    @State private var isCalibrationViewPresented: Bool = false
-    
-    @State private var airpodsService = AirpodsMotionService()
-    @State private var blinkDetector = BlinkDetector()
-    
-    @State private var finishedDrawing: DrawingModel?
+    @State private var viewModel = HomeViewModel()
     
     var body: some View {
-        NavigationStack(path: $path) {
+        @Bindable var viewModel = viewModel
+
+        NavigationStack(path: $viewModel.path) {
             VStack {
                 playButton
                 gallery
@@ -40,16 +33,10 @@ struct HomeView: View {
                 switch route {
                 case .new_doodle:
                     NewDoodleView(
-                        airpodsService: $airpodsService,
-                        blinkDetector: $blinkDetector,
+                        airpodsService: $viewModel.airpodsService,
+                        blinkDetector: $viewModel.blinkDetector,
                         onDoodleCompleted: { drawing in
-                        //isShowRevealDoodleViewPresented = true
-                        finishedDrawing = drawing
-                        // ensures full screen comes first
-                        Task { @MainActor in
-                            await Task.yield()
-                            path.removeAll()
-                        }
+                            viewModel.finishDoodle(drawing)
                     })
                     .navigationBarBackButtonHidden(true)
                 case .view_doodle:
@@ -61,23 +48,20 @@ struct HomeView: View {
                 }
             }
         }
-        .fullScreenCover(item: $finishedDrawing) { drawing in
+        .fullScreenCover(item: $viewModel.finishedDrawing) { drawing in
             RevealDoodleView(
                 drawing: drawing,
-                    onNewDoodle: { drawing in
-                    finishedDrawing = nil
-                    isCalibrationViewPresented = true
+                onNewDoodle: { _ in
+                    viewModel.startAnotherDoodle()
                 }, onDoodleSave: { drawing in
-                    finishedDrawing = nil
-                    saveDrawing(drawing)
+                    viewModel.saveDrawing(drawing, in: modelContext)
                 })
         }
-        .fullScreenCover(isPresented: $isCalibrationViewPresented) {
+        .fullScreenCover(isPresented: $viewModel.isCalibrationViewPresented) {
             CalibrationView(
-                airpodsService: $airpodsService,
-                blinkDetector: $blinkDetector) {
-                    isCalibrationViewPresented = false
-                    path.append(AppRoute.new_doodle)
+                airpodsService: $viewModel.airpodsService,
+                blinkDetector: $viewModel.blinkDetector) {
+                    viewModel.completeCalibration()
                 }
         }
     }
@@ -90,7 +74,7 @@ struct HomeView: View {
     
     var playButton: some View {
         Button(action: {
-            isCalibrationViewPresented = true
+            viewModel.startDoodle()
         }, label: {
             Label("Start Doodle", systemImage: "scribble.variable")
                 .font(.title2)
@@ -120,16 +104,6 @@ struct HomeView: View {
         .padding()
     }
     
-    private func saveDrawing(_ drawing: DrawingModel) {
-        modelContext.insert(drawing)
-        
-        do {
-            try modelContext.save()
-            debugPrint("drawing saved")
-        } catch {
-            print("Failed to save drawing:", error)
-        }
-    }
 }
 
 #Preview {
