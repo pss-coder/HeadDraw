@@ -37,7 +37,7 @@ struct HomeView: View {
                 }
             })
             .navigationTitle("HeadDraw")
-            .navigationSubtitle("Tilt to draw. Blink to ink. Laugh at the results.")
+            .navigationSubtitle("Eyes open to Draw, blink and you miss the ink.")
             .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
