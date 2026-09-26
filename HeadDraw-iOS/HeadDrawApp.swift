@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct HeadDrawApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HeadDrawRootView()
         }
+        .modelContainer(for: DrawingModel.self)
     }
 }

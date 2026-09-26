@@ -21,18 +21,78 @@
 			remoteGlobalIDString = 478460B0305E5F7A00C1C784;
 			remoteInfo = HeadDraw;
 		};
+		478462453066C61D00C1C784 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 478460A9305E5F7A00C1C784 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 478462373066C61C00C1C784;
+			remoteInfo = "HeadDraw-Mac";
+		};
+		4784624F3066C61D00C1C784 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 478460A9305E5F7A00C1C784 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 478462373066C61C00C1C784;
+			remoteInfo = "HeadDraw-Mac";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		478460B1305E5F7A00C1C784 /* HeadDraw.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HeadDraw.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		478460B1305E5F7A00C1C784 /* HeadDraw-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HeadDraw-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		478460BE305E5F7B00C1C784 /* HeadDrawTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeadDrawTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		478460C8305E5F7B00C1C784 /* HeadDrawUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeadDrawUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		478462383066C61C00C1C784 /* HeadDraw-Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HeadDraw-Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		478462443066C61D00C1C784 /* HeadDraw-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "HeadDraw-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4784624E3066C61D00C1C784 /* HeadDraw-MacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "HeadDraw-MacUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		478462613066C63C00C1C784 /* Exceptions for "Shared" folder in "HeadDraw-Mac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Calibration/CalibrationView.swift,
+				Canvas/Views/CanvasView.swift,
+				Canvas/Views/DottedPaper.metal,
+				Components/ButtonStyles.swift,
+				Components/Confetti.swift,
+				Components/SketchyTheme.swift,
+				Components/SupportedAirPodsModelsList.swift,
+				Doodle/Views/DoodleDetailView.swift,
+				Doodle/Views/NewDoodleView.swift,
+				Doodle/Views/RevealDoodleView.swift,
+				Gallery/GalleryListView.swift,
+				Gallery/GalleryView.swift,
+				HeadDrawRootView.swift,
+				Helper/AppIcon.swift,
+				Helper/PlatformImage.swift,
+				Home/HomeView.swift,
+				Home/HomeViewModel.swift,
+				Model/DrawingModel.swift,
+				Navigation/AppRoute.swift,
+				Onboarding/OnboardingView.swift,
+				Service/AirpodsMotionService.swift,
+				Service/BlinkDetector.swift,
+				Service/DrawingArchiveExporter.swift,
+				Settings/SettingsView.swift,
+			);
+			target = 478462373066C61C00C1C784 /* HeadDraw-Mac */;
+		};
+		47E1839A30682A8D008EAC7A /* Exceptions for "HeadDraw-iOS" folder in "HeadDraw-Mac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppIcon.icon,
+			);
+			target = 478462373066C61C00C1C784 /* HeadDraw-Mac */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		478460B3305E5F7A00C1C784 /* HeadDraw */ = {
+		478460B3305E5F7A00C1C784 /* HeadDraw-iOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = HeadDraw;
+			exceptions = (
+				47E1839A30682A8D008EAC7A /* Exceptions for "HeadDraw-iOS" folder in "HeadDraw-Mac" target */,
+			);
+			path = "HeadDraw-iOS";
 			sourceTree = "<group>";
 		};
 		478460C1305E5F7B00C1C784 /* HeadDrawTests */ = {
@@ -43,6 +103,29 @@
 		478460CB305E5F7B00C1C784 /* HeadDrawUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = HeadDrawUITests;
+			sourceTree = "<group>";
+		};
+		478462393066C61D00C1C784 /* HeadDraw-Mac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "HeadDraw-Mac";
+			sourceTree = "<group>";
+		};
+		478462473066C61D00C1C784 /* HeadDraw-MacTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "HeadDraw-MacTests";
+			sourceTree = "<group>";
+		};
+		478462513066C61D00C1C784 /* HeadDraw-MacUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "HeadDraw-MacUITests";
+			sourceTree = "<group>";
+		};
+		4784625F3066C62700C1C784 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				478462613066C63C00C1C784 /* Exceptions for "Shared" folder in "HeadDraw-Mac" target */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,15 +152,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		478462353066C61C00C1C784 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		478462413066C61D00C1C784 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4784624B3066C61D00C1C784 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		478460A8305E5F7A00C1C784 = {
 			isa = PBXGroup;
 			children = (
-				478460B3305E5F7A00C1C784 /* HeadDraw */,
+				4784625F3066C62700C1C784 /* Shared */,
+				478460B3305E5F7A00C1C784 /* HeadDraw-iOS */,
 				478460C1305E5F7B00C1C784 /* HeadDrawTests */,
 				478460CB305E5F7B00C1C784 /* HeadDrawUITests */,
+				478462393066C61D00C1C784 /* HeadDraw-Mac */,
+				478462473066C61D00C1C784 /* HeadDraw-MacTests */,
+				478462513066C61D00C1C784 /* HeadDraw-MacUITests */,
 				478460B2305E5F7A00C1C784 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,9 +193,12 @@
 		478460B2305E5F7A00C1C784 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				478460B1305E5F7A00C1C784 /* HeadDraw.app */,
+				478460B1305E5F7A00C1C784 /* HeadDraw-iOS.app */,
 				478460BE305E5F7B00C1C784 /* HeadDrawTests.xctest */,
 				478460C8305E5F7B00C1C784 /* HeadDrawUITests.xctest */,
+				478462383066C61C00C1C784 /* HeadDraw-Mac.app */,
+				478462443066C61D00C1C784 /* HeadDraw-MacTests.xctest */,
+				4784624E3066C61D00C1C784 /* HeadDraw-MacUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +206,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		478460B0305E5F7A00C1C784 /* HeadDraw */ = {
+		478460B0305E5F7A00C1C784 /* HeadDraw-iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 478460D2305E5F7B00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw" */;
+			buildConfigurationList = 478460D2305E5F7B00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-iOS" */;
 			buildPhases = (
 				478460AD305E5F7A00C1C784 /* Sources */,
 				478460AE305E5F7A00C1C784 /* Frameworks */,
@@ -108,13 +219,14 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				478460B3305E5F7A00C1C784 /* HeadDraw */,
+				478460B3305E5F7A00C1C784 /* HeadDraw-iOS */,
+				4784625F3066C62700C1C784 /* Shared */,
 			);
-			name = HeadDraw;
+			name = "HeadDraw-iOS";
 			packageProductDependencies = (
 			);
 			productName = HeadDraw;
-			productReference = 478460B1305E5F7A00C1C784 /* HeadDraw.app */;
+			productReference = 478460B1305E5F7A00C1C784 /* HeadDraw-iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		478460BD305E5F7B00C1C784 /* HeadDrawTests */ = {
@@ -163,6 +275,74 @@
 			productReference = 478460C8305E5F7B00C1C784 /* HeadDrawUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		478462373066C61C00C1C784 /* HeadDraw-Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 478462563066C61D00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-Mac" */;
+			buildPhases = (
+				478462343066C61C00C1C784 /* Sources */,
+				478462353066C61C00C1C784 /* Frameworks */,
+				478462363066C61C00C1C784 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				478462393066C61D00C1C784 /* HeadDraw-Mac */,
+			);
+			name = "HeadDraw-Mac";
+			packageProductDependencies = (
+			);
+			productName = "HeadDraw-Mac";
+			productReference = 478462383066C61C00C1C784 /* HeadDraw-Mac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		478462433066C61D00C1C784 /* HeadDraw-MacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 478462593066C61D00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-MacTests" */;
+			buildPhases = (
+				478462403066C61D00C1C784 /* Sources */,
+				478462413066C61D00C1C784 /* Frameworks */,
+				478462423066C61D00C1C784 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				478462463066C61D00C1C784 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				478462473066C61D00C1C784 /* HeadDraw-MacTests */,
+			);
+			name = "HeadDraw-MacTests";
+			packageProductDependencies = (
+			);
+			productName = "HeadDraw-MacTests";
+			productReference = 478462443066C61D00C1C784 /* HeadDraw-MacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		4784624D3066C61D00C1C784 /* HeadDraw-MacUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4784625C3066C61D00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-MacUITests" */;
+			buildPhases = (
+				4784624A3066C61D00C1C784 /* Sources */,
+				4784624B3066C61D00C1C784 /* Frameworks */,
+				4784624C3066C61D00C1C784 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				478462503066C61D00C1C784 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				478462513066C61D00C1C784 /* HeadDraw-MacUITests */,
+			);
+			name = "HeadDraw-MacUITests";
+			packageProductDependencies = (
+			);
+			productName = "HeadDraw-MacUITests";
+			productReference = 4784624E3066C61D00C1C784 /* HeadDraw-MacUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +364,17 @@
 						CreatedOnToolsVersion = 26.5;
 						TestTargetID = 478460B0305E5F7A00C1C784;
 					};
+					478462373066C61C00C1C784 = {
+						CreatedOnToolsVersion = 26.5;
+					};
+					478462433066C61D00C1C784 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = 478462373066C61C00C1C784;
+					};
+					4784624D3066C61D00C1C784 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = 478462373066C61C00C1C784;
+					};
 				};
 			};
 			buildConfigurationList = 478460AC305E5F7A00C1C784 /* Build configuration list for PBXProject "HeadDraw" */;
@@ -200,9 +391,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				478460B0305E5F7A00C1C784 /* HeadDraw */,
+				478460B0305E5F7A00C1C784 /* HeadDraw-iOS */,
 				478460BD305E5F7B00C1C784 /* HeadDrawTests */,
 				478460C7305E5F7B00C1C784 /* HeadDrawUITests */,
+				478462373066C61C00C1C784 /* HeadDraw-Mac */,
+				478462433066C61D00C1C784 /* HeadDraw-MacTests */,
+				4784624D3066C61D00C1C784 /* HeadDraw-MacUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +417,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		478460C6305E5F7B00C1C784 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		478462363066C61C00C1C784 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		478462423066C61D00C1C784 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4784624C3066C61D00C1C784 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,18 +468,49 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		478462343066C61C00C1C784 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		478462403066C61D00C1C784 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4784624A3066C61D00C1C784 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		478460C0305E5F7B00C1C784 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 478460B0305E5F7A00C1C784 /* HeadDraw */;
+			target = 478460B0305E5F7A00C1C784 /* HeadDraw-iOS */;
 			targetProxy = 478460BF305E5F7B00C1C784 /* PBXContainerItemProxy */;
 		};
 		478460CA305E5F7B00C1C784 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 478460B0305E5F7A00C1C784 /* HeadDraw */;
+			target = 478460B0305E5F7A00C1C784 /* HeadDraw-iOS */;
 			targetProxy = 478460C9305E5F7B00C1C784 /* PBXContainerItemProxy */;
+		};
+		478462463066C61D00C1C784 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 478462373066C61C00C1C784 /* HeadDraw-Mac */;
+			targetProxy = 478462453066C61D00C1C784 /* PBXContainerItemProxy */;
+		};
+		478462503066C61D00C1C784 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 478462373066C61C00C1C784 /* HeadDraw-Mac */;
+			targetProxy = 4784624F3066C61D00C1C784 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -395,14 +641,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RK9FBC2R6X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -427,14 +677,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RK9FBC2R6X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -538,6 +792,192 @@
 			};
 			name = Release;
 		};
+		478462573066C61D00C1C784 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RK9FBC2R6X;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.psscoder.HeadDraw-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		478462583066C61D00C1C784 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RK9FBC2R6X;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HeadDraw;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow app to use front camera to detect your eye blink.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses AirPods motion sensor to allow drawing via head movement.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.psscoder.HeadDraw-Mac";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4784625A3066C61D00C1C784 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RK9FBC2R6X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.psscoder.HeadDraw-MacTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HeadDraw-Mac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HeadDraw-Mac";
+			};
+			name = Debug;
+		};
+		4784625B3066C61D00C1C784 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RK9FBC2R6X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.psscoder.HeadDraw-MacTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HeadDraw-Mac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HeadDraw-Mac";
+			};
+			name = Release;
+		};
+		4784625D3066C61D00C1C784 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RK9FBC2R6X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.psscoder.HeadDraw-MacUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "HeadDraw-Mac";
+			};
+			name = Debug;
+		};
+		4784625E3066C61D00C1C784 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RK9FBC2R6X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.psscoder.HeadDraw-MacUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "HeadDraw-Mac";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -550,7 +990,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		478460D2305E5F7B00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw" */ = {
+		478460D2305E5F7B00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				478460D3305E5F7B00C1C784 /* Debug */,
@@ -573,6 +1013,33 @@
 			buildConfigurations = (
 				478460D9305E5F7B00C1C784 /* Debug */,
 				478460DA305E5F7B00C1C784 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		478462563066C61D00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				478462573066C61D00C1C784 /* Debug */,
+				478462583066C61D00C1C784 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		478462593066C61D00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-MacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4784625A3066C61D00C1C784 /* Debug */,
+				4784625B3066C61D00C1C784 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4784625C3066C61D00C1C784 /* Build configuration list for PBXNativeTarget "HeadDraw-MacUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4784625D3066C61D00C1C784 /* Debug */,
+				4784625E3066C61D00C1C784 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
