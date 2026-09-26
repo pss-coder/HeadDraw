@@ -34,7 +34,7 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     override init() {
         super.init()
-        setupSession()
+        //setupSession()
     }
     
     private func setupSession() {
@@ -68,6 +68,8 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     func start() {
+        setupSession()
+        
         sessionQueue.async { [weak self] in
             guard let self else { return }
             

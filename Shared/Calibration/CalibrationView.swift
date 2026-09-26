@@ -50,7 +50,6 @@ struct CalibrationView: View {
                     Button {
                         blinkDetector.stop()
                         airpodsService.stopDeviceMotionUpdates()
-                        
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
@@ -82,13 +81,13 @@ struct CalibrationView: View {
                         cursorPosition: airpodsService.centeringPosition,
                         onStart: {
                             SketchyFeedback.lightHaptic()
+                            //airpodsService.startGettingConnectionStatus()
                             airpodsService.startDeviceMotionUpdates()
                             //airpodsService.beginManualCalibration()
                         },
                         onCalibrate: {
                             airpodsService.beginManualCalibration()
                         }
-                        
                     )
                 case .testBlink:
                     TestBlinkStep(
