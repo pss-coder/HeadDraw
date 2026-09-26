@@ -103,7 +103,7 @@ struct CalibrationView: View {
             .transition(.opacity.combined(with: .scale(scale: 0.98)))
             .id(step)
 
-            Spacer(minLength: 0)
+            Spacer(minLength: 8)
 
             actionButton
                 .padding(.horizontal, 32)
