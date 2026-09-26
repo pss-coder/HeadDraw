@@ -188,7 +188,8 @@ private struct DrawingModeStep: View {
             .padding(.horizontal, 24)
         }
     }
-
+    
+    @ViewBuilder
     private func modeButton(
         _ mode: DrawingMode,
         symbol: String,
@@ -196,7 +197,7 @@ private struct DrawingModeStep: View {
     ) -> some View {
         let isSelected = selection == mode
 
-        return Button {
+        Button {
             selection = mode
             SketchyFeedback.lightHaptic()
         } label: {
