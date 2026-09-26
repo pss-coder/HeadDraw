@@ -8,6 +8,8 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     @Environment(\.modelContext) private var modelContext
     @AppStorage("useDarkAppearance") private var useDarkAppearance = false
     @Query(sort: \DrawingModel.createdAt, order: .reverse)
@@ -34,10 +36,6 @@ struct SettingsView: View {
                     ) {
                         Label("Export all images", systemImage: "square.and.arrow.up")
                     }
-                } else {
-                    Label("Preparing image export…", systemImage: "archivebox")
-                        .foregroundStyle(.secondary)
-                        .disabled(true)
                 }
 
                 Button(role: .destructive) {
@@ -56,6 +54,9 @@ struct SettingsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(SketchyTheme.Color.paper(for: colorScheme).ignoresSafeArea())
+        .listRowBackground(SketchyTheme.Color.paper(for: colorScheme))
         .navigationTitle("Settings")
         .task(id: drawings.map(\.id)) {
             prepareArchive()
@@ -119,20 +120,21 @@ struct SettingsView: View {
 }
 
 private struct AboutMeSheet: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "scribble.variable")
-                .font(.system(size: 36, weight: .medium))
-                .foregroundStyle(SketchyTheme.Color.coral)
+            AppIconView()
             Text("About HeadDraw")
                 .font(SketchyTheme.Font.heading(25))
+                .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme))
             Text("I'm Pawandeep, the maker of HeadDraw. I built this little app to make drawing feel playful, hands-free, and a bit unexpected.")
                 .font(SketchyTheme.Font.body())
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme).opacity(0.75))
         }
         .padding(28)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(SketchyTheme.Color.paper(for: .light))
+        .background(SketchyTheme.Color.paper(for: colorScheme).ignoresSafeArea())
     }
 }
