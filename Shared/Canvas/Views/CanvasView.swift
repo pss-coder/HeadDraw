@@ -7,24 +7,31 @@
 import PencilKit
 import SwiftUI
 
-struct CanvasView: UIViewRepresentable {
-    
+struct CanvasView: View {
     let drawing: PKDrawing
-    
+
+    var body: some View {
+        ZStack {
+            Color(red: 0.98, green: 0.976, blue: 0.953)
+                .colorEffect(ShaderLibrary.default.dottedPaper())
+
+            PencilDrawingView(drawing: drawing)
+        }
+    }
+}
+
+private struct PencilDrawingView: UIViewRepresentable {
+    let drawing: PKDrawing
+
     func makeUIView(context: Context) -> PKCanvasView {
-        
         let canvasView = PKCanvasView()
-        
         canvasView.isUserInteractionEnabled = false
-        canvasView.backgroundColor = .clear // TODO: Some dotted metal background ??
-        
+        canvasView.backgroundColor = .clear
+        canvasView.isOpaque = false
         return canvasView
     }
-    
-    func updateUIView(
-        _ uiView: PKCanvasView,
-        context: Context
-    ) {
+
+    func updateUIView(_ uiView: PKCanvasView, context: Context) {
         if uiView.drawing != drawing {
             uiView.drawing = drawing
         }
