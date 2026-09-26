@@ -45,6 +45,8 @@ struct CalibrationView: View {
                 HStack {
                     Spacer()
                     Button {
+                        blinkDetector.stop()
+                        airpodsService.stopDeviceMotionUpdates()
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
