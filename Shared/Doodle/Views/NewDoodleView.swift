@@ -45,7 +45,7 @@ struct NewDoodleView: View {
                     .colorMultiply(SketchyTheme.Color.teal)
                     .shadow(color: SketchyTheme.Color.teal.opacity(0.42), radius: 5)
                     .onChange(of: airpodsService.cursorPosition) { oldValue, newValue in
-                        guard blinkDetector.wasBothEyesClosed else { return }
+                        guard areBothEyesOpen else { return }
                         
                         let position = CGPoint(
                             x: newValue.x * proxy.size.width,
@@ -62,24 +62,19 @@ struct NewDoodleView: View {
                             )
                         }
                     }
+                    .onChange(of: areBothEyesOpen) { wasOpen, isOpen in
+                        if wasOpen && !isOpen {
+                            finishCurrentStroke()
+                        } else if !wasOpen && isOpen {
+                            drawingPoints = [CGPoint(
+                                x: airpodsService.cursorPosition.x * proxy.size.width,
+                                y: airpodsService.cursorPosition.y * proxy.size.height
+                            )]
+                        }
+                    }
                     .onChange(of: blinkDetector.wasBothEyesClosed) { wasClosed, isClosed in
                         if !wasClosed && isClosed {
                             SketchyFeedback.lightHaptic()
-                        }
-
-                            // Eyes just opened
-                        if wasClosed && !isClosed {
-                            guard drawingPoints.count >= 2 else {
-                                drawingPoints.removeAll()
-                                return
-                            }
-                            
-                            let stroke = makeAirPodsStroke(from: drawingPoints)
-                            
-                            airPodsStrokes.append(stroke)
-                            drawingPoints.removeAll()
-                            
-                            newDrawing = PKDrawing(strokes: airPodsStrokes)
                         }
                     }
                     
@@ -153,7 +148,7 @@ struct NewDoodleView: View {
     private var statusInfo: some View {
         HStack {
             Label {
-                Text("Blink to ink")
+                Text("Eyes open to draw")
             } icon: {
                 Image(systemName: "eye")
             }
@@ -194,6 +189,22 @@ struct NewDoodleView: View {
     private func formatTime(_ time: TimeInterval) -> String {
         let seconds = max(0, Int(time))
         return String(format: "00:%02d", seconds)
+    }
+
+    private var areBothEyesOpen: Bool {
+        !blinkDetector.isLeftEyeClosed && !blinkDetector.isRightEyeClosed
+    }
+
+    private func finishCurrentStroke() {
+        guard drawingPoints.count >= 2 else {
+            drawingPoints.removeAll()
+            return
+        }
+
+        let stroke = makeAirPodsStroke(from: drawingPoints)
+        airPodsStrokes.append(stroke)
+        drawingPoints.removeAll()
+        newDrawing = PKDrawing(strokes: airPodsStrokes)
     }
     
     private func makeAirPodsStroke(
