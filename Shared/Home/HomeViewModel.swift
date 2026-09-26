@@ -1,15 +1,18 @@
 import Observation
+import OSLog
 import SwiftData
 
+@MainActor
 @Observable
 final class HomeViewModel {
+    private let logger = Logger(subsystem: "com.headdraw", category: "storage")
+
     var path: [AppRoute] = []
     var isCalibrationViewPresented = false
-    
-    var airpodsService:AirpodsMotionService = AirpodsMotionService()
-    var blinkDetector:BlinkDetector = BlinkDetector()
+
+    var airpodsService = AirpodsMotionService()
+    var blinkDetector = BlinkDetector()
     var selectedDrawingMode: DrawingMode = .game
-    
     var finishedDrawing: DrawingModel?
 
     func startDoodle() {
@@ -19,7 +22,7 @@ final class HomeViewModel {
     func completeCalibration(_ drawingMode: DrawingMode) {
         selectedDrawingMode = drawingMode
         isCalibrationViewPresented = false
-        path.append(.new_doodle)
+        path.append(.newDoodle)
     }
 
     func finishDoodle(_ drawing: DrawingModel) {
@@ -42,9 +45,8 @@ final class HomeViewModel {
 
         do {
             try modelContext.save()
-            debugPrint("drawing saved")
         } catch {
-            print("Failed to save drawing:", error)
+            logger.error("Failed to save drawing: \(error.localizedDescription)")
         }
     }
 }

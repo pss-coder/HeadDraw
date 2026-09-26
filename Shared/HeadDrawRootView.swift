@@ -7,21 +7,19 @@
 import SwiftUI
 
 struct HeadDrawRootView: View {
-    
     @AppStorage("hasCompletedOnboarding")
     private var hasCompletedOnboarding = false
     @AppStorage("useDarkAppearance")
     private var useDarkAppearance = false
-    
-    @State var viewModel = HomeViewModel()
-    
+
+    @State private var appState = HomeViewModel()
+
     var body: some View {
         Group {
             if hasCompletedOnboarding {
                 HomeView()
-                    .environment(viewModel)
+                    .environment(appState)
             } else {
-                // start first drawing
                 OnboardingView {
                     hasCompletedOnboarding = true
                 }

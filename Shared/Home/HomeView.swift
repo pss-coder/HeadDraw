@@ -9,25 +9,21 @@ import PencilKit
 import SwiftData
 
 struct HomeView: View {
-    @Environment(HomeViewModel.self) var viewModel
-#if os(iOS)
-    
-#endif
+    @Environment(HomeViewModel.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
 
     @Query(sort: \DrawingModel.createdAt, order: .reverse)
     private var drawings: [DrawingModel]
-    
+
     var body: some View {
-        @Bindable var viewModel = viewModel
-        
-        NavigationStack(path: $viewModel.path) {
-            ZStack(content: {
-                
+        @Bindable var appState = appState
+
+        NavigationStack(path: $appState.path) {
+            ZStack {
                 SketchyTheme.Color.paper(for: colorScheme)
                     .ignoresSafeArea()
-                
+
                 VStack {
                     if drawings.isEmpty {
                         emptyState
@@ -37,7 +33,7 @@ struct HomeView: View {
                         Spacer()
                     }
                 }
-            })
+            }
             .navigationTitle("HeadDraw")
             .navigationSubtitle("Eyes open to Draw, blink and you miss the ink.")
 #if os(iOS)
@@ -50,14 +46,15 @@ struct HomeView: View {
             }
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
-                case .new_doodle:
+                case .newDoodle:
                     NewDoodleView(
-                        airpodsService: $viewModel.airpodsService,
-                        blinkDetector: $viewModel.blinkDetector,
-                        drawingMode: viewModel.selectedDrawingMode,
+                        airpodsService: $appState.airpodsService,
+                        blinkDetector: $appState.blinkDetector,
+                        drawingMode: appState.selectedDrawingMode,
                         onDoodleCompleted: { drawing in
-                            viewModel.finishDoodle(drawing)
-                    })
+                            appState.finishDoodle(drawing)
+                        }
+                    )
                     .navigationBarBackButtonHidden(true)
                 case .gallery:
                     GalleryListView()
@@ -67,27 +64,27 @@ struct HomeView: View {
             }
         }
         .headDrawPresentations(
-            finishedDrawing: $viewModel.finishedDrawing,
-            isCalibrationPresented: $viewModel.isCalibrationViewPresented,
-            airpodsService: $viewModel.airpodsService,
-            blinkDetector: $viewModel.blinkDetector,
-            onNewDoodle: { _ in viewModel.startAnotherDoodle() },
-            onDoodleSave: { viewModel.saveDrawing($0, in: modelContext) },
-            onCalibrationComplete: viewModel.completeCalibration
+            finishedDrawing: $appState.finishedDrawing,
+            isCalibrationPresented: $appState.isCalibrationViewPresented,
+            airpodsService: $appState.airpodsService,
+            blinkDetector: $appState.blinkDetector,
+            onNewDoodle: { _ in appState.startAnotherDoodle() },
+            onDoodleSave: { appState.saveDrawing($0, in: modelContext) },
+            onCalibrationComplete: appState.completeCalibration
         )
     }
-    
-    var settingsNavButton: some View {
+
+    private var settingsNavButton: some View {
         NavigationLink(value: AppRoute.settings) {
             Label("", systemImage: "gear")
                 .font(.system(size: 17, weight: .medium, design: .rounded))
                 .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme))
         }
     }
-    
-    var playButton: some View {
+
+    private var playButton: some View {
         Button(action: {
-            viewModel.startDoodle()
+            appState.startDoodle()
         }, label: {
             Label("Start Doodle", systemImage: "scribble.variable")
                 .font(SketchyTheme.Font.heading(23))
@@ -96,7 +93,6 @@ struct HomeView: View {
         })
         .padding(.horizontal)
         .buttonStyle(SketchyButtonStyle())
-
     }
     
     var gallery: some View {
@@ -130,7 +126,7 @@ struct HomeView: View {
                     .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme).opacity(0.75))
             }
 
-            Button(action: viewModel.startDoodle) {
+            Button(action: appState.startDoodle) {
                 Label("Start Drawing", systemImage: "scribble.variable")
             }
             .buttonStyle(SketchyButtonStyle())
