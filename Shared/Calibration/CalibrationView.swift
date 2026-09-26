@@ -143,6 +143,8 @@ struct CalibrationView: View {
 }
 
 private struct ConnectAirPodsStep: View {
+    @State private var showingSupportedModels = false
+
     let isConnected: Bool
 
     var body: some View {
@@ -172,6 +174,18 @@ private struct ConnectAirPodsStep: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
+            }
+
+            Button {
+                showingSupportedModels = true
+            } label: {
+                Label("Supported models", systemImage: "list.bullet.rectangle")
+            }
+            .buttonStyle(SketchyButtonStyle(tone: .paper))
+            .controlSize(.small)
+            .fixedSize(horizontal: true, vertical: false)
+            .sheet(isPresented: $showingSupportedModels) {
+                SupportedAirPodsModelsSheet()
             }
         }
     }

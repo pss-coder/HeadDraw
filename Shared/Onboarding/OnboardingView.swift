@@ -18,6 +18,7 @@ struct OnboardingStep: Identifiable {
     let symbolName: String
     let title: String
     let message: String
+    var showsSupportedModels = false
 }
 
 struct OnboardingView: View {
@@ -31,7 +32,8 @@ struct OnboardingView: View {
         OnboardingStep(
             symbolName: "airpods.gen3",
             title: "Put on your AirPods",
-            message: "Their motion sensors steer your pencil. Your dignity is optional."
+            message: "Their motion sensors steer your pencil. Your dignity is optional.",
+            showsSupportedModels: true
         ),
         OnboardingStep(
             symbolName: "headphones",
@@ -169,6 +171,11 @@ private struct OnboardingPage: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
+                    .padding(.horizontal, 32)
+            }
+
+            if step.showsSupportedModels {
+                SupportedAirPodsModelsList(compact: true)
                     .padding(.horizontal, 32)
             }
             

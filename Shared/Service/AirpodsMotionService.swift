@@ -26,6 +26,15 @@ import AVFoundation
 @Observable
 final class AirpodsMotionService: NSObject {
     
+        // Static list of models supporting dynamic head tracking
+    static let supportedModels = [
+        "AirPods Pro (1st & 2nd Gen)",
+        "AirPods Max",
+        "AirPods (3rd & 4th Gen)",
+        "Beats Fit Pro",
+        "Beats Studio Pro"
+    ]
+    
         // MARK: - AirPods Motion
     
     private let headphoneMotionManager = CMHeadphoneMotionManager()
