@@ -107,11 +107,16 @@ struct RevealDoodleView: View {
 
 #Preview {
     RevealDoodleView(
-        drawing: DrawingModel(drawingData: .init(), thumbnailData: .init())
+        drawing: DrawingModel(
+            drawingData: .init(),
+            thumbnailData: .init(),
+            prompt: ""
+        )
     ,
     onNewDoodle: { _ in
         //
-    } ,onDoodleSave: { _ in
+    } ,
+onDoodleSave: { _ in
         //
     })
 

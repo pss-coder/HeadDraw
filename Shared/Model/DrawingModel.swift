@@ -14,18 +14,21 @@ final class DrawingModel{
     var createdAt: Date
     var drawingData : Data
     var thumbnailData: Data
+    var prompt: String // item suggested to draw
 
     init(
         id: UUID = UUID(),
         createdAt: Date = .now,
         drawingData: Data,
-        thumbnailData: Data
+        thumbnailData: Data,
+        prompt: String
         
     ) {
         self.id = id
         self.createdAt = createdAt
         self.drawingData = drawingData
         self.thumbnailData = thumbnailData
+        self.prompt = prompt
     }
 }
 

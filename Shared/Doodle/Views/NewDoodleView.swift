@@ -137,7 +137,8 @@ struct NewDoodleView: View {
                 
                 let drawingModel = DrawingModel(
                     drawingData: data,
-                    thumbnailData: thumbnailData
+                    thumbnailData: thumbnailData,
+                    prompt: "Cat"
                 )
                 
                 onDoodleCompleted(drawingModel)
@@ -148,7 +149,7 @@ struct NewDoodleView: View {
     private var statusInfo: some View {
         HStack {
             Label {
-                Text("Eyes open to draw")
+                Text("Blinked: \(blinkDetector.blinkCount) times")
             } icon: {
                 Image(systemName: "eye")
             }
@@ -238,6 +239,10 @@ struct NewDoodleView: View {
     }
 }
 
-//#Preview {
-//    NewDoodleView(onDoodleCompleted: {drawing in})
-//}
+#Preview {
+    NewDoodleView(
+        airpodsService: .constant(AirpodsMotionService()),
+        blinkDetector: .constant(BlinkDetector())) { _ in
+            //
+        }
+}

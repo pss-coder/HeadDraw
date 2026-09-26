@@ -76,6 +76,10 @@ struct DoodleDetailView: View {
 
 #Preview {
     DoodleDetailView(
-        drawing: DrawingModel(drawingData: .init(), thumbnailData: .init())
+        drawing: DrawingModel(
+            drawingData: .init(),
+            thumbnailData: .init(),
+            prompt: ""
+        )
     )
 }
