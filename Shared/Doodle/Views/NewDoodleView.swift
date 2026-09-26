@@ -20,6 +20,7 @@ struct NewDoodleView: View {
     
     @Binding var airpodsService: AirpodsMotionService
     @Binding var blinkDetector: BlinkDetector
+    let drawingMode: DrawingMode
     
     @State private var newDrawing: PKDrawing = PKDrawing()
     
@@ -91,6 +92,12 @@ struct NewDoodleView: View {
                             x: airpodsService.cursorPosition.x * proxy.size.width,
                             y: airpodsService.cursorPosition.y * proxy.size.height
                         )
+                        .allowsHitTesting(false)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture(count: 2) {
+                    guard drawingMode == .free else { return }
+                    completeDrawing()
                 }
                 .background(SketchyTheme.Color.canvas)
                 .overlay {
@@ -130,7 +137,7 @@ struct NewDoodleView: View {
             }
         }
         .onReceive(timer) { _ in
-            guard !hasFinished, !isPaused else { return }
+            guard drawingMode == .game, !hasFinished, !isPaused else { return }
 
             if timeRemaining > 0 {
                 timeRemaining -= 1
@@ -139,25 +146,7 @@ struct NewDoodleView: View {
                 }
             }
             if timeRemaining <= 0 {
-                hasFinished = true
-                let data = newDrawing.dataRepresentation()
-                
-                let thumbnail = newDrawing.image(
-                    from: newDrawing.bounds,
-                    scale: 1
-                )
-                
-                guard let thumbnailData = thumbnail.pngData() else {
-                    return
-                }
-                
-                let drawingModel = DrawingModel(
-                    drawingData: data,
-                    thumbnailData: thumbnailData,
-                    prompt: "Cat"
-                )
-                
-                onDoodleCompleted(drawingModel)
+                completeDrawing()
             }
         }
     }
@@ -171,7 +160,7 @@ struct NewDoodleView: View {
             }
             .font(SketchyTheme.Font.body(15, weight: .semibold))
             Spacer()
-            HStack {
+            if drawingMode == .game {
                 Text(formatTime(timeRemaining))
                     .font(.system(size: 16, weight: .semibold, design: .monospaced))
                     .foregroundStyle(SketchyTheme.Color.coral)
@@ -188,9 +177,9 @@ struct NewDoodleView: View {
     
     private var prompt: some View {
         VStack {
-            Text("Draw dare: a cat")
+            Text(drawingMode == .game ? "Draw dare: a cat" : "Free drawing")
                 .font(SketchyTheme.Font.heading(21))
-            Text("Aim for cat-ish.")
+            Text(drawingMode == .game ? "Aim for cat-ish." : "Double-tap the canvas when you're finished.")
                 .font(SketchyTheme.Font.body(14))
                 .foregroundStyle(.secondary)
         }
@@ -206,6 +195,24 @@ struct NewDoodleView: View {
     private func formatTime(_ time: TimeInterval) -> String {
         let seconds = max(0, Int(time))
         return String(format: "00:%02d", seconds)
+    }
+
+    private func completeDrawing() {
+        guard !hasFinished else { return }
+        hasFinished = true
+        finishCurrentStroke()
+
+        let data = newDrawing.dataRepresentation()
+        let thumbnail = newDrawing.image(from: newDrawing.bounds, scale: 1)
+
+        guard let thumbnailData = thumbnail.pngData() else { return }
+
+        onDoodleCompleted(DrawingModel(
+            drawingData: data,
+            thumbnailData: thumbnailData,
+            prompt: drawingMode == .game ? "Cat" : "",
+            drawingMode: drawingMode
+        ))
     }
 
     private var areBothEyesOpen: Bool {
@@ -258,7 +265,8 @@ struct NewDoodleView: View {
 #Preview {
     NewDoodleView(
         airpodsService: .constant(AirpodsMotionService()),
-        blinkDetector: .constant(BlinkDetector())) { _ in
+        blinkDetector: .constant(BlinkDetector()),
+        drawingMode: .game) { _ in
             //
         }
 }

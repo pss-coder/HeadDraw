@@ -35,6 +35,19 @@ struct DoodleDetailView: View {
                 Text(drawing.createdAt, format: .dateTime.month(.wide).day().year())
                     .foregroundStyle(.secondary)
 
+                Label(
+                    drawing.drawingMode.title,
+                    systemImage: drawing.drawingMode == .free ? "scribble.variable" : "timer"
+                )
+                .font(SketchyTheme.Font.body(16, weight: .semibold))
+                .foregroundStyle(SketchyTheme.Color.teal)
+
+                if drawing.drawingMode == .game, !drawing.prompt.isEmpty {
+                    Text("Prompt: \(drawing.prompt)")
+                        .font(SketchyTheme.Font.body(15))
+                        .foregroundStyle(.secondary)
+                }
+
                 if let shareURL {
                     ShareLink(
                         item: shareURL,
@@ -79,7 +92,8 @@ struct DoodleDetailView: View {
         drawing: DrawingModel(
             drawingData: .init(),
             thumbnailData: .init(),
-            prompt: ""
+            prompt: "",
+            drawingMode: .game
         )
     )
 }

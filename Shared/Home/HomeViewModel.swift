@@ -8,6 +8,7 @@ final class HomeViewModel {
     
     var airpodsService:AirpodsMotionService = AirpodsMotionService()
     var blinkDetector:BlinkDetector = BlinkDetector()
+    var selectedDrawingMode: DrawingMode = .game
     
     var finishedDrawing: DrawingModel?
 
@@ -15,7 +16,8 @@ final class HomeViewModel {
         isCalibrationViewPresented = true
     }
 
-    func completeCalibration() {
+    func completeCalibration(_ drawingMode: DrawingMode) {
+        selectedDrawingMode = drawingMode
         isCalibrationViewPresented = false
         path.append(.new_doodle)
     }

@@ -21,6 +21,7 @@ import SwiftUI
 import AVFoundation
 
 enum CalibrationStep: Int, CaseIterable, Equatable {
+    case drawingMode
     case connectAirPods
     case centerHead
     case testBlink
@@ -32,9 +33,10 @@ struct CalibrationView: View {
     @Binding var airpodsService: AirpodsMotionService
     @Binding var blinkDetector: BlinkDetector
 
-    let onComplete: () -> Void
+    let onComplete: (DrawingMode) -> Void
 
-    @State private var step: CalibrationStep = .connectAirPods
+    @State private var step: CalibrationStep = .drawingMode
+    @State private var selectedDrawingMode: DrawingMode = .game
 
     private let requiredBlinkCount = 3
 
@@ -67,6 +69,8 @@ struct CalibrationView: View {
 
             Group {
                 switch step {
+                case .drawingMode:
+                    DrawingModeStep(selection: $selectedDrawingMode)
                 case .connectAirPods:
                     ConnectAirPodsStep(
                         isConnected: airpodsService.isHeadphoneConnected
@@ -120,6 +124,12 @@ struct CalibrationView: View {
     @ViewBuilder
     private var actionButton: some View {
         switch step {
+        case .drawingMode:
+            Button("Continue") { advance() }
+                .buttonStyle(SketchyButtonStyle())
+                .controlSize(.large)
+                .frame(maxWidth: .infinity)
+
         case .connectAirPods:
             Button("Continue") { advance() }
                 .buttonStyle(SketchyButtonStyle())
@@ -134,7 +144,7 @@ struct CalibrationView: View {
                 .frame(maxWidth: .infinity)
                 .disabled(!airpodsService.isCentered)
         case .testBlink:
-            Button("Let's Draw") { onComplete() }
+            Button("Let's Draw") { onComplete(selectedDrawingMode) }
                 .buttonStyle(SketchyButtonStyle())
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
@@ -145,6 +155,79 @@ struct CalibrationView: View {
     private func advance() {
         guard let next = CalibrationStep(rawValue: step.rawValue + 1) else { return }
         step = next
+    }
+}
+
+private struct DrawingModeStep: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Binding var selection: DrawingMode
+
+    var body: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 8) {
+                Text("How do you want to draw?")
+                    .font(SketchyTheme.Font.heading(24))
+                Text("Pick your pace for this doodle.")
+                    .font(SketchyTheme.Font.body(16))
+                    .foregroundStyle(.secondary)
+            }
+            .multilineTextAlignment(.center)
+
+            VStack(spacing: 12) {
+                modeButton(
+                    .free,
+                    symbol: "scribble.variable",
+                    detail: "No prompt or timer. Double-tap the canvas when you're done."
+                )
+                modeButton(
+                    .game,
+                    symbol: "timer",
+                    detail: "Draw a prompt before time runs out."
+                )
+            }
+            .padding(.horizontal, 24)
+        }
+    }
+
+    private func modeButton(
+        _ mode: DrawingMode,
+        symbol: String,
+        detail: String
+    ) -> some View {
+        let isSelected = selection == mode
+
+        return Button {
+            selection = mode
+            SketchyFeedback.lightHaptic()
+        } label: {
+            HStack(alignment: .top, spacing: 14) {
+                Image(systemName: symbol)
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(isSelected ? SketchyTheme.Color.teal : SketchyTheme.Color.coral)
+                    .frame(width: 30)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(mode.title)
+                        .font(SketchyTheme.Font.heading(18))
+                    Text(detail)
+                        .font(SketchyTheme.Font.body(14))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 4)
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(isSelected ? SketchyTheme.Color.teal : SketchyTheme.Color.mustard)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .sketchyBorder(
+                color: isSelected
+                    ? SketchyTheme.Color.teal
+                    : SketchyTheme.Color.ink(for: colorScheme).opacity(0.55),
+                fill: SketchyTheme.Color.paperShade(for: colorScheme)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -397,6 +480,6 @@ private struct StepProgressDots: View {
     CalibrationView(
         airpodsService: .constant(AirpodsMotionService()),
         blinkDetector: .constant(BlinkDetector()),
-        onComplete: {}
+        onComplete: { _ in }
     )
 }

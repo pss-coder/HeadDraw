@@ -8,6 +8,20 @@ import SwiftData
 import Foundation
 import PencilKit
 
+enum DrawingMode: String, CaseIterable, Codable, Identifiable {
+    case free
+    case game
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .free: "Free mode"
+        case .game: "Game mode"
+        }
+    }
+}
+
 @Model
 final class DrawingModel{
     var id: UUID
@@ -15,13 +29,19 @@ final class DrawingModel{
     var drawingData : Data
     var thumbnailData: Data
     var prompt: String // item suggested to draw
+    var drawingModeRawValue: String = DrawingMode.game.rawValue
+
+    var drawingMode: DrawingMode {
+        DrawingMode(rawValue: drawingModeRawValue) ?? .game
+    }
 
     init(
         id: UUID = UUID(),
         createdAt: Date = .now,
         drawingData: Data,
         thumbnailData: Data,
-        prompt: String
+        prompt: String,
+        drawingMode: DrawingMode = .game
         
     ) {
         self.id = id
@@ -29,6 +49,7 @@ final class DrawingModel{
         self.drawingData = drawingData
         self.thumbnailData = thumbnailData
         self.prompt = prompt
+        self.drawingModeRawValue = drawingMode.rawValue
     }
 }
 

@@ -44,6 +44,7 @@ struct HomeView: View {
                     NewDoodleView(
                         airpodsService: $viewModel.airpodsService,
                         blinkDetector: $viewModel.blinkDetector,
+                        drawingMode: viewModel.selectedDrawingMode,
                         onDoodleCompleted: { drawing in
                             viewModel.finishDoodle(drawing)
                     })
@@ -74,10 +75,10 @@ struct HomeView: View {
                 })
         }
         .fullScreenCover(isPresented: $viewModel.isCalibrationViewPresented) {
-            CalibrationView(
+                CalibrationView(
                 airpodsService: $viewModel.airpodsService,
                 blinkDetector: $viewModel.blinkDetector) {
-                    viewModel.completeCalibration()
+                    viewModel.completeCalibration($0)
                 }
         }
     }
