@@ -41,7 +41,7 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         session.beginConfiguration()
         session.sessionPreset = .high
         
-            // Use front camera for face tracking
+        // Use front camera for face tracking
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
               let input = try? AVCaptureDeviceInput(device: camera) else {
             self.errorMessage = "Front camera unavailable."

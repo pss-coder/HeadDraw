@@ -21,7 +21,6 @@
 //
 import Foundation
 import CoreMotion
-import Observation
 import AVFoundation
 
 @Observable
@@ -101,36 +100,14 @@ final class AirpodsMotionService: NSObject {
     
     override init() {
         super.init()
+        headphoneMotionManager.startConnectionStatusUpdates()
         headphoneMotionManager.delegate = self
-        updateHeadphoneConnectionStatus()
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleRouteChange(_:)),
-            name: AVAudioSession.routeChangeNotification,
-            object: nil
-        )
-        
-        
+        isHeadphoneConnected = headphoneMotionManager.isConnectionStatusActive
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self)
         headphoneMotionManager.stopDeviceMotionUpdates()
-    }
-    
-        // MARK: - AirPods Connection
-    
-        // MARK: - Connection
-    
-    @objc private func handleRouteChange(_ notification: Notification) {
-        updateHeadphoneConnectionStatus()
-    }
-    
-    private func updateHeadphoneConnectionStatus() {
-        let session = AVAudioSession.sharedInstance()
-        let headphoneTypes: [AVAudioSession.Port] = [.headphones, .bluetoothA2DP, .bluetoothLE, .bluetoothHFP]
-        isHeadphoneConnected = session.currentRoute.outputs.contains { headphoneTypes.contains($0.portType) }
     }
     
     
@@ -315,13 +292,10 @@ final class AirpodsMotionService: NSObject {
             }
             
         } else {
-            
-                // User moved outside the circle.
-                // Reset the timer.
+            // User moved outside the circle.
+            // Reset the timer.
             calibrationStartedAt = nil
             centeringProgress = 0
-            
-            print("↩️ Moved outside calibration area")
         }
     }
     
@@ -472,7 +446,7 @@ extension AirpodsMotionService: CMHeadphoneMotionManagerDelegate {
         _ manager: CMHeadphoneMotionManager
     ) {
         
-        print("🎧 CMHeadphoneMotionManager connected")
+        print("🎧 CMHeadphoneMotionManager connected and start motion update")
         
         isHeadphoneConnected = true
         
@@ -483,7 +457,7 @@ extension AirpodsMotionService: CMHeadphoneMotionManagerDelegate {
         _ manager: CMHeadphoneMotionManager
     ) {
         
-        print("❌ CMHeadphoneMotionManager disconnected")
+        print("❌ CMHeadphoneMotionManager disconnected and stop motion update")
         
         isHeadphoneConnected = false
         

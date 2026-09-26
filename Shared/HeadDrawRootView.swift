@@ -15,6 +15,7 @@ struct HeadDrawRootView: View {
         if hasCompletedOnboarding {
             HomeView()
         } else {
+            // start first drawing
             OnboardingView {
                 hasCompletedOnboarding = true
             }

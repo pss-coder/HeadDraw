@@ -5,8 +5,10 @@ import SwiftData
 final class HomeViewModel {
     var path: [AppRoute] = []
     var isCalibrationViewPresented = false
-    var airpodsService = AirpodsMotionService()
-    var blinkDetector = BlinkDetector()
+    
+    var airpodsService:AirpodsMotionService = AirpodsMotionService()
+    var blinkDetector:BlinkDetector = BlinkDetector()
+    
     var finishedDrawing: DrawingModel?
 
     func startDoodle() {

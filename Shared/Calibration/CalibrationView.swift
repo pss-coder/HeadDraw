@@ -74,12 +74,13 @@ struct CalibrationView: View {
                         isCentered: airpodsService.isCentered,
                         progress: airpodsService.centeringProgress,
                         cursorPosition: airpodsService.centeringPosition,
-                        onCalibrate: airpodsService.beginManualCalibration
+                        onStart: {
+                            SketchyFeedback.lightHaptic()
+                            airpodsService.startDeviceMotionUpdates()
+                            airpodsService.beginManualCalibration()
+                        },
+                        
                     )
-                    .onAppear {
-                        airpodsService.beginManualCalibration()
-                        SketchyFeedback.lightHaptic()
-                    }
                 case .testBlink:
                     TestBlinkStep(
                         detectedCount: blinkDetector.blinkCount,
@@ -103,12 +104,6 @@ struct CalibrationView: View {
         .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme))
         .tint(SketchyTheme.Color.teal)
         .animation(.easeInOut(duration: 0.25), value: step)
-        .onChange(of: airpodsService.isHeadphoneConnected, initial: true) { _, connected in
-            if connected {
-                print("headphone connected, and start motion update")
-                airpodsService.startDeviceMotionUpdates()
-            }
-        }
         .onChange(of: airpodsService.isCentered) { _, isCentered in
             if isCentered {
                 SketchyFeedback.successHaptic()
@@ -186,7 +181,7 @@ private struct CenterHeadStep: View {
     let isCentered: Bool
     let progress: Double
     let cursorPosition: CGPoint
-    let onCalibrate: () -> Void
+    let onStart: () -> Void
 
     private let targetRadius: CGFloat = 28
     @State private var cursorWasOutsideTarget = false
@@ -223,7 +218,8 @@ private struct CenterHeadStep: View {
                             y: cursorPosition.y * proxy.size.height
                         )
                         .animation(.easeOut(duration: 0.08), value: cursorPosition)
-                        .onChange(of: cursorPosition) { _, position in
+                        .onChange(of: cursorPosition) { oldPosition, position in
+                            guard oldPosition != position else { return }
                             let deltaX = (position.x - 0.5) * proxy.size.width
                             let deltaY = (position.y - 0.5) * proxy.size.height
                             let entryRadius = targetRadius - 5
@@ -240,7 +236,7 @@ private struct CenterHeadStep: View {
             .frame(width: 150, height: 150)
 
             VStack(spacing: 8) {
-                Text(isCentered ? "Baseline captured" : "Center your head")
+                Text(isCentered ? "Baseline captured" : "Center your head and tap start below")
                     .font(SketchyTheme.Font.heading(22))
 
                 Text(isCentered
@@ -252,10 +248,9 @@ private struct CenterHeadStep: View {
                     .padding(.horizontal, 32)
 
                 Button {
-                    SketchyFeedback.lightHaptic()
-                    onCalibrate()
+                    onStart()
                 } label: {
-                    Text("Tap to center manually")
+                    Text("Start Centering")
                 }
                 .buttonStyle(SketchyButtonStyle(tone: .paper))
                 .disabled(isCentered)
