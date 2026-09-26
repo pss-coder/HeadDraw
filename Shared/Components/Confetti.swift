@@ -5,6 +5,7 @@
 //  Created by Pawandeep Sekhon on 26/9/26.
 //
 import SwiftUI
+#if os(iOS)
 import SwiftUI
 import SwiftUI
 
@@ -108,6 +109,13 @@ struct ConfettiView: UIViewRepresentable {
         }
     }
 }
+#elseif os(macOS)
+struct ConfettiView: View {
+    var body: some View {
+        EmptyView()
+    }
+}
+#endif
 //
 //    // 2. Use it inside your Destination View
 //struct DestinationView: View {

@@ -8,6 +8,8 @@ import SwiftUI
 import SwiftData
 
 struct GalleryView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     // Show drawings starting with most recent on top
     @Query(
         sort: \DrawingModel.createdAt,
@@ -44,14 +46,17 @@ struct GalleryView: View {
                     DoodleDetailView(drawing: drawing)
                 } label: {
                     GeometryReader { geometry in
-                        if let image = UIImage(data: drawing.thumbnailData) {
-                            Image(uiImage: image)
+                        if let image = PlatformImage(data: drawing.thumbnailData) {
+                            Image(platformImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: geometry.size.width, height: geometry.size.width)
                         }
                     }
-                    .border(.primary.opacity(0.5))
+                    .sketchyBorder(
+                        color: SketchyTheme.Color.ink(for: colorScheme).opacity(0.8),
+                        fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                    )
                     .aspectRatio(1, contentMode: .fit)
                 }
                 .buttonStyle(.plain)

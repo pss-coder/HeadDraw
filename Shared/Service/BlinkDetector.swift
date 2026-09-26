@@ -6,6 +6,9 @@
 //
 import SwiftUI
 import AVFoundation
+#if os(macOS)
+import AppKit
+#endif
 
 import Vision
 import Observation
@@ -34,14 +37,14 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     override init() {
         super.init()
-        setupSession()
+        //setupSession()
     }
     
     private func setupSession() {
         session.beginConfiguration()
         session.sessionPreset = .high
         
-            // Use front camera for face tracking
+        // Use front camera for face tracking
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
               let input = try? AVCaptureDeviceInput(device: camera) else {
             self.errorMessage = "Front camera unavailable."
@@ -68,6 +71,8 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     func start() {
+        setupSession()
+        
         sessionQueue.async { [weak self] in
             guard let self else { return }
             
@@ -85,6 +90,12 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
                 self.session.stopRunning()
             }
         }
+        // reset blink count
+        isLeftEyeClosed = false
+        isRightEyeClosed = false
+        blinkCount = 0
+        didBlink = false
+        isEyesOpen = true
     }
     
         // Camera frame delegate processing loop
@@ -170,6 +181,7 @@ class BlinkDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 
+#if os(iOS)
 struct CameraPreviewView: UIViewRepresentable {
     let session: AVCaptureSession
     
@@ -196,6 +208,35 @@ struct CameraPreviewView: UIViewRepresentable {
         var previewLayer: AVCaptureVideoPreviewLayer?
     }
 }
+#elseif os(macOS)
+struct CameraPreviewView: NSViewRepresentable {
+    let session: AVCaptureSession
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        view.wantsLayer = true
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+        view.layer?.addSublayer(previewLayer)
+        context.coordinator.previewLayer = previewLayer
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            context.coordinator.previewLayer?.frame = nsView.bounds
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    class Coordinator {
+        var previewLayer: AVCaptureVideoPreviewLayer?
+    }
+}
+#endif
 
 
 struct EyeBlinkTrackerView: View {

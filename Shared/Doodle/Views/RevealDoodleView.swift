@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct RevealDoodleView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var isRestartPromptPresented = false
+
     let drawing: DrawingModel
     // new doodle <- basically clear everything, and restart again
     let onNewDoodle: (DrawingModel) -> Void
@@ -19,68 +22,63 @@ struct RevealDoodleView: View {
             VStack {
                     // Prompt
                 HStack {
-                    Text("Your doodle is ready!")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                    Text("A masterpiece-ish!")
+                        .font(SketchyTheme.Font.heading(30))
+                        .foregroundStyle(SketchyTheme.Color.ink(for: colorScheme))
                         .padding(.bottom, 10)
                 }
                 
                 // image
-                if let image = UIImage(data: drawing.thumbnailData) {
-                    Image(uiImage: image)
+                if let image = PlatformImage(data: drawing.thumbnailData) {
+                    Image(platformImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .frame(height: 350)
-                        .border(.primary)
+                        .padding(8)
+                        .sketchyBorder(
+                            color: SketchyTheme.Color.ink(for: colorScheme),
+                            fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                        )
+                }
+
+                Label(
+                    drawing.drawingMode.title,
+                    systemImage: drawing.drawingMode == .free ? "scribble.variable" : "timer"
+                )
+                .font(SketchyTheme.Font.body(16, weight: .semibold))
+                .foregroundStyle(SketchyTheme.Color.teal)
+                if drawing.drawingMode == .game, !drawing.prompt.isEmpty {
+                    Text("Prompt: \(drawing.prompt)")
+                        .font(SketchyTheme.Font.body(15))
+                        .foregroundStyle(.secondary)
                 }
                     // Button
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
-                        
                         if let _ = drawing.thumbnailImage {
                             let imageUrl = shareImageRenderer()
                             ShareLink(
                                 item: imageUrl,
-                                preview: SharePreview("My Doodle")
+                                preview: SharePreview("My HeadDrawing")
                             ) {
-                                Label("Share Image", systemImage: "square.and.arrow.up")
+                                Label("Share", systemImage: "square.and.arrow.up")
                             }
-                            .buttonStyle(
-                                MinimalButtonStyle(
-                                    backgroundColor: .clear,
-                                    foregroundColor: .primary,
-                                    borderColor: Color.primary.opacity(0.2)
-                                )
-                            )
+                            .buttonStyle(SketchyButtonStyle(tone: .paper))
                         }
                         Button {
-                            onNewDoodle(drawing)
+                            isRestartPromptPresented = true
                         } label: {
-                            Label("New Doodle", systemImage: "plus")
+                            Label("Go again", systemImage: "plus")
                         }
-                        .buttonStyle(
-                            MinimalButtonStyle(
-                                backgroundColor: .clear,
-                                foregroundColor: .primary,
-                                borderColor: Color.primary.opacity(0.2)
-                            )
-                        )
+                        .buttonStyle(SketchyButtonStyle(tone: .paper))
                     }
                     Button {
-                        //TODO: pass the data
                         onDoodleSave(drawing)
                     } label: {
                         Label("Save", systemImage: "checkmark")
                     }
-                    .buttonStyle(
-                        MinimalButtonStyle(
-                            backgroundColor: .primary,
-                            foregroundColor: Color(.systemBackground),
-                            borderColor: .primary
-                        )
-                    )
+                    .buttonStyle(SketchyButtonStyle())
                 }
                 .padding()
             }
@@ -91,13 +89,28 @@ struct RevealDoodleView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false) // Allows tapping buttons underneath
         }
+        .sketchyPaper()
+        .confirmationDialog(
+            "Save this doodle before starting another?",
+            isPresented: $isRestartPromptPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Save and Go Again") {
+                onDoodleSave(drawing)
+                onNewDoodle(drawing)
+            }
+            Button("Skip Saving") {
+                onNewDoodle(drawing)
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
     
     func shareImageRenderer() -> URL {
-        let renderer = ImageRenderer(content: Image(uiImage: drawing.thumbnailImage!))
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("doodle.png")
-        
-        if let data = renderer.uiImage?.pngData() {
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("HeadDraw.png")
+
+        if let image = drawing.thumbnailImage,
+           let data = PlatformImageRenderer.pngData(for: Image(platformImage: image)) {
             try? data.write(to: tempURL)
         }
         return tempURL
@@ -106,11 +119,17 @@ struct RevealDoodleView: View {
 
 #Preview {
     RevealDoodleView(
-        drawing: DrawingModel(drawingData: .init(), thumbnailData: .init())
+        drawing: DrawingModel(
+            drawingData: .init(),
+            thumbnailData: .init(),
+            prompt: "",
+            drawingMode: .game
+        )
     ,
     onNewDoodle: { _ in
         //
-    } ,onDoodleSave: { _ in
+    } ,
+onDoodleSave: { _ in
         //
     })
 

@@ -21,11 +21,19 @@
 //
 import Foundation
 import CoreMotion
-import Observation
 import AVFoundation
 
 @Observable
 final class AirpodsMotionService: NSObject {
+    
+        // Static list of models supporting dynamic head tracking
+    static let supportedModels = [
+        "AirPods Pro",
+        "AirPods Max",
+        "AirPods (3rd Gen and later)",
+        "Beats Fit Pro",
+        "Beats Studio Pro"
+    ]
     
         // MARK: - AirPods Motion
     
@@ -87,6 +95,8 @@ final class AirpodsMotionService: NSObject {
     
     private var smoothedPitch: Double = 0
     private var smoothedYaw: Double = 0
+    private var lastCursorUpdateTimestamp: TimeInterval?
+    private let cursorUpdateInterval: TimeInterval = 1.0 / 30.0
     
         /// Lower = smoother but slower.
     private let smoothingFactor: Double = 0.12
@@ -101,43 +111,22 @@ final class AirpodsMotionService: NSObject {
     
     override init() {
         super.init()
-        headphoneMotionManager.delegate = self
-        updateHeadphoneConnectionStatus()
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleRouteChange(_:)),
-            name: AVAudioSession.routeChangeNotification,
-            object: nil
-        )
-        
-        
+        startGettingConnectionStatus()
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self)
         headphoneMotionManager.stopDeviceMotionUpdates()
     }
     
-        // MARK: - AirPods Connection
-    
-        // MARK: - Connection
-    
-    @objc private func handleRouteChange(_ notification: Notification) {
-        updateHeadphoneConnectionStatus()
+    func startGettingConnectionStatus() {
+        headphoneMotionManager.delegate = self
+        headphoneMotionManager.startConnectionStatusUpdates()
     }
-    
-    private func updateHeadphoneConnectionStatus() {
-        let session = AVAudioSession.sharedInstance()
-        let headphoneTypes: [AVAudioSession.Port] = [.headphones, .bluetoothA2DP, .bluetoothLE, .bluetoothHFP]
-        isHeadphoneConnected = session.currentRoute.outputs.contains { headphoneTypes.contains($0.portType) }
-    }
-    
     
         // MARK: - Motion
     
     func startDeviceMotionUpdates() {
-        
+        print("startDeviceMotionUpdates called")
         guard headphoneMotionManager.isDeviceMotionAvailable else {
             print("❌ Device motion unavailable")
             return
@@ -175,7 +164,8 @@ final class AirpodsMotionService: NSObject {
                 
                 self.updateCursor(
                     pitch: attitude.pitch,
-                    yaw: attitude.yaw
+                    yaw: attitude.yaw,
+                    timestamp: motion.timestamp
                 )
                 
                     // If manual calibration is currently happening,
@@ -192,14 +182,33 @@ final class AirpodsMotionService: NSObject {
     }
     
     func stopDeviceMotionUpdates() {
-        
-        guard headphoneMotionManager.isDeviceMotionActive else {
-            return
+
+        if headphoneMotionManager.isDeviceMotionActive {
+            headphoneMotionManager.stopDeviceMotionUpdates()
         }
-        
-        headphoneMotionManager.stopDeviceMotionUpdates()
+
+        resetMotionState()
         
         print("🛑 Stopped AirPods device motion")
+    }
+
+    private func resetMotionState() {
+        latestMotion = nil
+
+        calibrationPitch = nil
+        calibrationYaw = nil
+        calibrationStartedAt = nil
+        isCentered = false
+        centeringProgress = 0
+        centeringPosition = CGPoint(x: 0.5, y: 0.5)
+
+        neutralPitch = nil
+        neutralYaw = nil
+
+        cursorPosition = CGPoint(x: 0.5, y: 0.5)
+        smoothedPitch = 0
+        smoothedYaw = 0
+        lastCursorUpdateTimestamp = nil
     }
     
         // MARK: - Manual Calibration
@@ -315,13 +324,10 @@ final class AirpodsMotionService: NSObject {
             }
             
         } else {
-            
-                // User moved outside the circle.
-                // Reset the timer.
+            // User moved outside the circle.
+            // Reset the timer.
             calibrationStartedAt = nil
             centeringProgress = 0
-            
-            print("↩️ Moved outside calibration area")
         }
     }
     
@@ -372,7 +378,8 @@ final class AirpodsMotionService: NSObject {
     
     private func updateCursor(
         pitch: Double,
-        yaw: Double
+        yaw: Double,
+        timestamp: TimeInterval
     ) {
         
         guard let neutralPitch,
@@ -424,10 +431,22 @@ final class AirpodsMotionService: NSObject {
         0.5
         - smoothedPitch * sensitivity
         
-        cursorPosition = CGPoint(
+        let newPosition = CGPoint(
             x: clamp(x),
             y: clamp(y)
         )
+
+        guard cursorPosition != newPosition else {
+            return
+        }
+
+        if let lastCursorUpdateTimestamp,
+           timestamp - lastCursorUpdateTimestamp < cursorUpdateInterval {
+            return
+        }
+
+        lastCursorUpdateTimestamp = timestamp
+        cursorPosition = newPosition
     }
     
         // MARK: - Helpers
@@ -471,19 +490,15 @@ extension AirpodsMotionService: CMHeadphoneMotionManagerDelegate {
     func headphoneMotionManagerDidConnect(
         _ manager: CMHeadphoneMotionManager
     ) {
-        
         print("🎧 CMHeadphoneMotionManager connected")
-        
         isHeadphoneConnected = true
-        
-        startDeviceMotionUpdates()
     }
     
     func headphoneMotionManagerDidDisconnect(
         _ manager: CMHeadphoneMotionManager
     ) {
         
-        print("❌ CMHeadphoneMotionManager disconnected")
+        print("❌ CMHeadphoneMotionManager disconnected and stop motion update")
         
         isHeadphoneConnected = false
         

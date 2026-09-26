@@ -5,15 +5,19 @@ import SwiftData
 final class HomeViewModel {
     var path: [AppRoute] = []
     var isCalibrationViewPresented = false
-    var airpodsService = AirpodsMotionService()
-    var blinkDetector = BlinkDetector()
+    
+    var airpodsService:AirpodsMotionService = AirpodsMotionService()
+    var blinkDetector:BlinkDetector = BlinkDetector()
+    var selectedDrawingMode: DrawingMode = .game
+    
     var finishedDrawing: DrawingModel?
 
     func startDoodle() {
         isCalibrationViewPresented = true
     }
 
-    func completeCalibration() {
+    func completeCalibration(_ drawingMode: DrawingMode) {
+        selectedDrawingMode = drawingMode
         isCalibrationViewPresented = false
         path.append(.new_doodle)
     }

@@ -8,48 +8,64 @@
 import SwiftUI
 
 struct DoodleDetailView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let drawing: DrawingModel
     @State private var shareURL: URL?
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                Text("Your doodle")
-                    .font(.title)
-                    .fontWeight(.bold)
+                Text("Your Drawing")
+                    .font(SketchyTheme.Font.heading(28))
 
                 if let image = drawing.thumbnailImage {
-                    Image(uiImage: image)
+                    Image(platformImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .frame(height: 350)
-                        .border(.primary)
+                        .padding(8)
+                        .sketchyBorder(
+                            color: SketchyTheme.Color.ink(for: colorScheme),
+                            fill: SketchyTheme.Color.paperShade(for: colorScheme)
+                        )
                 }
 
                 Text(drawing.createdAt, format: .dateTime.month(.wide).day().year())
                     .foregroundStyle(.secondary)
 
+                Label(
+                    drawing.drawingMode.title,
+                    systemImage: drawing.drawingMode == .free ? "scribble.variable" : "timer"
+                )
+                .font(SketchyTheme.Font.body(16, weight: .semibold))
+                .foregroundStyle(SketchyTheme.Color.teal)
+
+                if drawing.drawingMode == .game, !drawing.prompt.isEmpty {
+                    Text("Prompt: \(drawing.prompt)")
+                        .font(SketchyTheme.Font.body(15))
+                        .foregroundStyle(.secondary)
+                }
+
                 if let shareURL {
                     ShareLink(
                         item: shareURL,
-                        preview: SharePreview("My Doodle")
+                        preview: SharePreview("My HeadDraw doodle")
                     ) {
-                        Label("Share Image", systemImage: "square.and.arrow.up")
+                        Label("Share doodle", systemImage: "square.and.arrow.up")
                     }
-                    .buttonStyle(
-                        MinimalButtonStyle(
-                            backgroundColor: .clear,
-                            foregroundColor: .primary,
-                            borderColor: Color.primary.opacity(0.2)
-                        )
-                    )
+                    .buttonStyle(SketchyButtonStyle(tone: .paper))
                 }
             }
             .padding()
         }
+        .sketchyPaper()
         .navigationTitle("Doodle")
+    #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(SketchyTheme.Color.paper(for: colorScheme), for: .navigationBar)
+    #endif
         .onAppear {
             shareURL = makeShareURL()
         }
@@ -58,8 +74,9 @@ struct DoodleDetailView: View {
     private func makeShareURL() -> URL? {
         guard let image = drawing.thumbnailImage else { return nil }
 
-        let renderer = ImageRenderer(content: Image(uiImage: image))
-        guard let data = renderer.uiImage?.pngData() else { return nil }
+        guard let data = PlatformImageRenderer.pngData(for: Image(platformImage: image)) else {
+            return nil
+        }
 
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("doodle-\(drawing.id.uuidString).png")
@@ -75,6 +92,11 @@ struct DoodleDetailView: View {
 
 #Preview {
     DoodleDetailView(
-        drawing: DrawingModel(drawingData: .init(), thumbnailData: .init())
+        drawing: DrawingModel(
+            drawingData: .init(),
+            thumbnailData: .init(),
+            prompt: "",
+            drawingMode: .game
+        )
     )
 }
