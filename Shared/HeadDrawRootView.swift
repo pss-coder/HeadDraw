@@ -13,10 +13,13 @@ struct HeadDrawRootView: View {
     @AppStorage("useDarkAppearance")
     private var useDarkAppearance = false
     
+    @State var viewModel = HomeViewModel()
+    
     var body: some View {
         Group {
             if hasCompletedOnboarding {
                 HomeView()
+                    .environment(viewModel)
             } else {
                 // start first drawing
                 OnboardingView {

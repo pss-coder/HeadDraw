@@ -9,17 +9,17 @@ import PencilKit
 import SwiftData
 
 struct HomeView: View {
+    @Environment(HomeViewModel.self) var viewModel
+    
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
-    
-    @State private var viewModel = HomeViewModel()
-    
+
     @Query(sort: \DrawingModel.createdAt, order: .reverse)
     private var drawings: [DrawingModel]
     
     var body: some View {
         @Bindable var viewModel = viewModel
-
+        
         NavigationStack(path: $viewModel.path) {
             VStack {
                 if drawings.isEmpty {
