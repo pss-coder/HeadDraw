@@ -95,6 +95,8 @@ final class AirpodsMotionService: NSObject {
     
     private var smoothedPitch: Double = 0
     private var smoothedYaw: Double = 0
+    private var lastCursorUpdateTimestamp: TimeInterval?
+    private let cursorUpdateInterval: TimeInterval = 1.0 / 30.0
     
         /// Lower = smoother but slower.
     private let smoothingFactor: Double = 0.12
@@ -161,7 +163,8 @@ final class AirpodsMotionService: NSObject {
                 
                 self.updateCursor(
                     pitch: attitude.pitch,
-                    yaw: attitude.yaw
+                    yaw: attitude.yaw,
+                    timestamp: motion.timestamp
                 )
                 
                     // If manual calibration is currently happening,
@@ -178,14 +181,33 @@ final class AirpodsMotionService: NSObject {
     }
     
     func stopDeviceMotionUpdates() {
-        
-        guard headphoneMotionManager.isDeviceMotionActive else {
-            return
+
+        if headphoneMotionManager.isDeviceMotionActive {
+            headphoneMotionManager.stopDeviceMotionUpdates()
         }
-        
-        headphoneMotionManager.stopDeviceMotionUpdates()
+
+        resetMotionState()
         
         print("🛑 Stopped AirPods device motion")
+    }
+
+    private func resetMotionState() {
+        latestMotion = nil
+
+        calibrationPitch = nil
+        calibrationYaw = nil
+        calibrationStartedAt = nil
+        isCentered = false
+        centeringProgress = 0
+        centeringPosition = CGPoint(x: 0.5, y: 0.5)
+
+        neutralPitch = nil
+        neutralYaw = nil
+
+        cursorPosition = CGPoint(x: 0.5, y: 0.5)
+        smoothedPitch = 0
+        smoothedYaw = 0
+        lastCursorUpdateTimestamp = nil
     }
     
         // MARK: - Manual Calibration
@@ -355,7 +377,8 @@ final class AirpodsMotionService: NSObject {
     
     private func updateCursor(
         pitch: Double,
-        yaw: Double
+        yaw: Double,
+        timestamp: TimeInterval
     ) {
         
         guard let neutralPitch,
@@ -407,10 +430,22 @@ final class AirpodsMotionService: NSObject {
         0.5
         - smoothedPitch * sensitivity
         
-        cursorPosition = CGPoint(
+        let newPosition = CGPoint(
             x: clamp(x),
             y: clamp(y)
         )
+
+        guard cursorPosition != newPosition else {
+            return
+        }
+
+        if let lastCursorUpdateTimestamp,
+           timestamp - lastCursorUpdateTimestamp < cursorUpdateInterval {
+            return
+        }
+
+        lastCursorUpdateTimestamp = timestamp
+        cursorPosition = newPosition
     }
     
         // MARK: - Helpers
@@ -459,7 +494,7 @@ extension AirpodsMotionService: CMHeadphoneMotionManagerDelegate {
         
         isHeadphoneConnected = true
         
-        startDeviceMotionUpdates()
+        //startDeviceMotionUpdates()
     }
     
     func headphoneMotionManagerDidDisconnect(

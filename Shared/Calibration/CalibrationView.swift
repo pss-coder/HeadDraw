@@ -77,9 +77,12 @@ struct CalibrationView: View {
                         cursorPosition: airpodsService.centeringPosition,
                         onStart: {
                             SketchyFeedback.lightHaptic()
-                            //airpodsService.startDeviceMotionUpdates()
-                            airpodsService.beginManualCalibration()
+                            airpodsService.startDeviceMotionUpdates()
+                            //airpodsService.beginManualCalibration()
                         },
+                        onCalibrate: {
+                            airpodsService.beginManualCalibration()
+                        }
                         
                     )
                 case .testBlink:
@@ -197,6 +200,7 @@ private struct CenterHeadStep: View {
     let progress: Double
     let cursorPosition: CGPoint
     let onStart: () -> Void
+    let onCalibrate: () -> Void
 
     private let targetRadius: CGFloat = 28
     @State private var cursorWasOutsideTarget = false
@@ -263,7 +267,7 @@ private struct CenterHeadStep: View {
                     .padding(.horizontal, 32)
 
                 Button {
-                    onStart()
+                    onCalibrate()
                 } label: {
                     Text("Start Centering")
                 }
@@ -271,6 +275,9 @@ private struct CenterHeadStep: View {
                 .disabled(isCentered)
                 .padding()
             }
+        }
+        .onAppear {
+            onStart()
         }
     }
 }
