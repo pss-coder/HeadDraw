@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RevealDoodleView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @State private var isRestartPromptPresented = false
 
     let drawing: DrawingModel
     // new doodle <- basically clear everything, and restart again
@@ -43,29 +44,27 @@ struct RevealDoodleView: View {
                     // Button
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
-                        
                         if let _ = drawing.thumbnailImage {
                             let imageUrl = shareImageRenderer()
                             ShareLink(
                                 item: imageUrl,
                                 preview: SharePreview("My HeadDraw doodle")
                             ) {
-                                Label("Share doodle", systemImage: "square.and.arrow.up")
+                                Label("Share", systemImage: "square.and.arrow.up")
                             }
                             .buttonStyle(SketchyButtonStyle(tone: .paper))
                         }
                         Button {
-                            onNewDoodle(drawing)
+                            isRestartPromptPresented = true
                         } label: {
                             Label("Go again", systemImage: "plus")
                         }
                         .buttonStyle(SketchyButtonStyle(tone: .paper))
                     }
                     Button {
-                        //TODO: pass the data
                         onDoodleSave(drawing)
                     } label: {
-                        Label("Save to gallery", systemImage: "checkmark")
+                        Label("Save", systemImage: "checkmark")
                     }
                     .buttonStyle(SketchyButtonStyle())
                 }
@@ -79,6 +78,20 @@ struct RevealDoodleView: View {
                 .allowsHitTesting(false) // Allows tapping buttons underneath
         }
         .sketchyPaper()
+        .confirmationDialog(
+            "Save this doodle before starting another?",
+            isPresented: $isRestartPromptPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Save and Go Again") {
+                onDoodleSave(drawing)
+                onNewDoodle(drawing)
+            }
+            Button("Skip Saving") {
+                onNewDoodle(drawing)
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
     
     func shareImageRenderer() -> URL {
