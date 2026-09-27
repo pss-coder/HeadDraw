@@ -65,3 +65,8 @@ HeadDraw requests camera access for blink detection and motion access for headph
 2. Select the `HeadDraw-iOS` app target for iPhone or iPad, or `HeadDraw-Mac` for macOS.
 3. Choose a compatible simulator or connected device and run the app with **Product > Run** (`⌘R`).
 4. Grant camera and motion permissions when prompted, and connect a supported headphone model to use head tracking.
+
+Next Steps for Improvement for Launch
+- Better Calibrate Eye Detection - observed even when not blinking, app assumes you are blinking
+- Leverage Foundation Models for Prompting
+- Improve Onboarding experience for user to know.
